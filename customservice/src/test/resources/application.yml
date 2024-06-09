@@ -14,3 +14,11 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+jwt:
+  secret: secret_string
+  issuer: admin
+  customer-subject: customer
+  phone-number-claim: phone-number
+  id-claim: id
+  bank-id-claim: bank-id

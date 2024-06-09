@@ -1,12 +1,12 @@
 package ru.sarmosov.account.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import ru.sarmosov.account.dto.TotalDTO;
+import ru.sarmosov.bankstarter.dto.BalanceDTO;
+import ru.sarmosov.bankstarter.dto.TotalDTO;
 import ru.sarmosov.account.exception.InsufficientFundsException;
-import ru.sarmosov.account.exception.UserNotFoundException;
+import ru.sarmosov.bankstarter.exception.UserNotFoundException;
 import ru.sarmosov.account.service.BankAccountService;
 
 
@@ -18,16 +18,18 @@ public class RestBankAccountController {
     private final BankAccountService bankAccountService;
 
     @PostMapping("/increase")
-    public String increase(@RequestHeader("Authorization") String token, @RequestBody TotalDTO totalDTO) {
-        System.out.println("increase");
-        bankAccountService.increaseBalance(token, totalDTO);
-        return "OK";
+    public BalanceDTO increase(@RequestHeader("Authorization") String token, @RequestBody TotalDTO totalDTO) {
+        return bankAccountService.increaseBalance(token, totalDTO);
     }
 
     @PostMapping("/decrease")
-    public void decrease(@RequestHeader("Authorization") String token, @RequestBody TotalDTO totalDTO) {
-        System.out.println("lsllslslsl");
-        bankAccountService.decreaseBalance(token, totalDTO);
+    public BalanceDTO decrease(@RequestHeader("Authorization") String token, @RequestBody TotalDTO totalDTO) {
+        return bankAccountService.decreaseBalance(token, totalDTO);
+    }
+
+    @GetMapping("/balance")
+    public BalanceDTO balance(@RequestHeader("Authorization") String token) {
+        return bankAccountService.getBalance(token);
     }
 
     @ExceptionHandler(UserNotFoundException.class)

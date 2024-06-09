@@ -1,11 +1,12 @@
 package ru.sarmosov.account.service;
 
-import ru.sarmosov.account.dto.TotalDTO;
+import ru.sarmosov.bankstarter.dto.BalanceDTO;
+import ru.sarmosov.bankstarter.dto.TotalDTO;
 
 public interface BankAccountInterface {
 
-    public void increaseBalance(String token, TotalDTO totalDTO);
+    BalanceDTO increaseBalance(String token, TotalDTO totalDTO);
 
-    public void decreaseBalance(String token, TotalDTO totalDTO);
+    BalanceDTO decreaseBalance(String token, TotalDTO totalDTO);
 
 }

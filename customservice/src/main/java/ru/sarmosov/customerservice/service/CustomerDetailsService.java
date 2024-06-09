@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.sarmosov.customerservice.entity.Customer;
+import ru.sarmosov.customerservice.entity.CustomerEntity;
 import ru.sarmosov.customerservice.repository.CustomerRepository;
 import ru.sarmosov.customerservice.security.CustomerDetails;
 
@@ -19,7 +19,9 @@ public class CustomerDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Customer> customer = customerRepository.findByPhoneNumber(username);
+
+        Optional<CustomerEntity> customer = customerRepository.findByPhoneNumber(username);
+
         if (customer.isEmpty())
             throw new UsernameNotFoundException("User not found");
 

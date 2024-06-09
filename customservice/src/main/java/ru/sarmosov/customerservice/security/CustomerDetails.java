@@ -3,7 +3,7 @@ package ru.sarmosov.customerservice.security;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.sarmosov.customerservice.entity.Customer;
+import ru.sarmosov.customerservice.entity.CustomerEntity;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,10 +11,10 @@ import java.util.List;
 @Getter
 public class CustomerDetails implements UserDetails {
 
-    private Customer customer;
+    private CustomerEntity customerEntity;
 
-    public CustomerDetails(Customer customer) {
-        this.customer = customer;
+    public CustomerDetails(CustomerEntity customerEntity) {
+        this.customerEntity = customerEntity;
     }
 
     @Override
@@ -24,12 +24,12 @@ public class CustomerDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return customer.getPassword();
+        return customerEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return customer.getPhoneNumber();
+        return customerEntity.getPhoneNumber();
     }
 
     @Override

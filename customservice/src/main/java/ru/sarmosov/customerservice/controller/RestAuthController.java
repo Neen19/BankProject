@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import ru.sarmosov.customerservice.dto.AuthDTO;
-import ru.sarmosov.customerservice.dto.CustomerDTO;
+import ru.sarmosov.bankstarter.dto.CustomerDTO;
 import ru.sarmosov.customerservice.dto.TokenResponse;
 import ru.sarmosov.customerservice.service.JWTService;
 
@@ -35,5 +35,7 @@ public class RestAuthController {
     private ResponseEntity<String> handleException(BadCredentialsException e) {
         return new ResponseEntity<>("User not found", HttpStatus.UNAUTHORIZED);
     }
+
+
 
 }

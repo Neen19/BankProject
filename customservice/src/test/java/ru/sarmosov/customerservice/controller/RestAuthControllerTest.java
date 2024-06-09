@@ -17,13 +17,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.BadCredentialsException;
+import ru.sarmosov.bankstarter.dto.CustomerDTO;
 import ru.sarmosov.customerservice.dto.AuthDTO;
-import ru.sarmosov.customerservice.dto.CustomerDTO;
 import ru.sarmosov.customerservice.dto.TokenResponse;
-import ru.sarmosov.customerservice.entity.Customer;
+import ru.sarmosov.customerservice.entity.CustomerEntity;
 import ru.sarmosov.customerservice.service.CustomerDetailsService;
 import ru.sarmosov.customerservice.service.JWTService;
-import ru.sarmosov.customerservice.util.JWTUtil;
+import ru.sarmosov.bankstarter.util.JWTUtil;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(RestAuthController.class)
@@ -91,13 +91,13 @@ public class RestAuthControllerTest {
     @Test
     public void testDecode_Success() throws Exception {
         String token = "Bearer valid-token";
-        Customer customer = new Customer();
-        customer.setPhoneNumber("1234567890");
+        CustomerEntity customerEntity = new CustomerEntity();
+        customerEntity.setPhoneNumber("1234567890");
         CustomerDTO customerDTO = new CustomerDTO();
         customerDTO.setPhoneNumber("1234567890");
 
-        when(jwtService.getCustomerByToken(anyString())).thenReturn(customer);
-        when(modelMapper.map(any(Customer.class), eq(CustomerDTO.class))).thenReturn(customerDTO);
+        when(jwtService.getCustomerByToken(anyString())).thenReturn(customerEntity);
+        when(modelMapper.map(any(CustomerEntity.class), eq(CustomerDTO.class))).thenReturn(customerDTO);
 
         mockMvc.perform(get("/api/auth/customer")
                         .header("Authorization", token))
@@ -105,7 +105,7 @@ public class RestAuthControllerTest {
                 .andExpect(jsonPath("$.phoneNumber").value("1234567890"));
 
         verify(jwtService).getCustomerByToken(anyString());
-        verify(modelMapper).map(any(Customer.class), eq(CustomerDTO.class));
+        verify(modelMapper).map(any(CustomerEntity.class), eq(CustomerDTO.class));
     }
 
     @Test

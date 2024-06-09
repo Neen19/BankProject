@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.sarmosov.customerservice.service.CustomerDetailsService;
-import ru.sarmosov.customerservice.util.JWTUtil;
+import ru.sarmosov.bankstarter.util.JWTUtil;
 
 import java.io.IOException;
 
@@ -50,7 +50,7 @@ public class JWTFilter extends OncePerRequestFilter {
         } else {
             String jwtToken = authHeader.replace("Bearer ", "");
             try {
-                String phoneNumber = jwtUtil.verifyTokenAndRetrievePhoneNumber(jwtToken);
+                String phoneNumber = jwtUtil.verifyTokenAndRetrievePhoneNumber(jwtToken).getPhoneNumber();
 
                 UserDetails customerDetails = customerDetailsService.loadUserByUsername(phoneNumber);
 

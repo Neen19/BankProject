@@ -1,6 +1,5 @@
 package ru.sarmosov.account.util;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -8,8 +7,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import ru.sarmosov.account.dto.CustomerDTO;
-import ru.sarmosov.account.exception.UserNotFoundException;
+import ru.sarmosov.bankstarter.dto.CustomerDTO;
+import ru.sarmosov.bankstarter.exception.UserNotFoundException;
 
 @Component
 public class NetworkUtils {

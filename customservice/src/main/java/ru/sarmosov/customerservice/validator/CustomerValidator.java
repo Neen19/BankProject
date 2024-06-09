@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import ru.sarmosov.customerservice.entity.Customer;
+import ru.sarmosov.customerservice.entity.CustomerEntity;
 import ru.sarmosov.customerservice.service.CustomerDetailsService;
 
 @Component
@@ -20,15 +20,15 @@ public class CustomerValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return Customer.class.equals(aClass);
+        return CustomerEntity.class.equals(aClass);
     }
 
     @Override
     public void validate(Object o, Errors errors) {
-        Customer customer = (Customer) o;
+        CustomerEntity customerEntity = (CustomerEntity) o;
 
         try {
-            customerDetailsService.loadUserByUsername(customer.getPhoneNumber());
+            customerDetailsService.loadUserByUsername(customerEntity.getPhoneNumber());
         } catch (UsernameNotFoundException ignored) {
             return;
         }
