@@ -1,7 +1,6 @@
 package ru.sarmosov.deposit.factory;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import ru.sarmosov.deposit.deposit.AbstractDeposit;
 import ru.sarmosov.deposit.deposit.capitalization.CapitalizationDeposit;
 import ru.sarmosov.deposit.deposit.capitalization.DepositableCapitalizationDeposit;
@@ -13,20 +12,50 @@ import ru.sarmosov.deposit.deposit.percent.monthly.MonthlyDepositablePercentDepo
 import ru.sarmosov.deposit.deposit.percent.monthly.MonthlyDepositableWithdrawablePercentDeposit;
 import ru.sarmosov.deposit.deposit.percent.monthly.MonthlyPercentDeposit;
 import ru.sarmosov.deposit.entity.DepositEntity;
-import ru.sarmosov.deposit.enums.DepositType;
-import ru.sarmosov.deposit.enums.PercentPaymentType;
+import ru.sarmosov.deposit.entity.RequestEntity;
+import ru.sarmosov.bankstarter.enums.DepositType;
+import ru.sarmosov.bankstarter.enums.PercentPaymentType;
 import ru.sarmosov.deposit.repository.DepositTypeRepository;
-import ru.sarmosov.deposit.repository.PercentPaymentTypeRepository;
+import ru.sarmosov.deposit.repository.PercentPaymentPeriodRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 
-@Component
+
 @RequiredArgsConstructor
 public class DepositFactoryImpl implements DepositFactory {
 
-    public List<AbstractDeposit> getDeposits(List<DepositEntity> deposits) {
+    private final PercentPaymentPeriodRepository paymentTypeRepository;
+    private final DepositTypeRepository depositTypeRepository;
+
+
+    @Override
+    public DepositEntity convertRequestEntityToDepositEntity(RequestEntity request, String token) {
+
+
+        DepositEntity depositEntity = new DepositEntity (
+            request.getAccountId(),
+                request.getDepositType().getId(),
+                request.isRefillable(),
+                request.getAmount(),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(3),
+                request.getPercent(),
+                1,
+                LocalDate.now().plusMonths(1),
+                request.getCustomerId(),
+                false,
+                request.isWithdrawal(),
+                request.getCustomerId(),
+                token
+        );
+        return depositEntity;
+    }
+
+    @Override
+    public List<AbstractDeposit> getDeposits(Iterable<DepositEntity> deposits) {
         List<AbstractDeposit> result = new ArrayList<>();
         for (DepositEntity deposit : deposits) {
             result.add(convertDepositEntityToAbstractDeposit(deposit));
@@ -34,11 +63,9 @@ public class DepositFactoryImpl implements DepositFactory {
         return result;
     }
 
-    private final PercentPaymentTypeRepository paymentTypeRepository;
-    private final DepositTypeRepository depositTypeRepository;
 
-
-    private AbstractDeposit convertDepositEntityToAbstractDeposit(DepositEntity depositEntity) {
+    @Override
+    public AbstractDeposit convertDepositEntityToAbstractDeposit(DepositEntity depositEntity) {
         AbstractDeposit deposit;
 
         DepositType depositType = depositTypeRepository.findById(depositEntity.getTypeId()).orElseThrow().getTypeName();
@@ -50,7 +77,7 @@ public class DepositFactoryImpl implements DepositFactory {
                         depositEntity.getBalance(),
                         depositEntity.getPercent(),
                         depositEntity.getPercentPaymentDate(),
-                        paymentTypeRepository.findById(depositEntity.getTypePercentPaymentId()).orElseThrow().getPeriod(),
+                        paymentTypeRepository.findById(depositEntity.getPeriodPercentPaymentId()).orElseThrow().getPeriod(),
                         depositEntity.getStartDate(),
                         depositEntity.getEndDate()
                 );

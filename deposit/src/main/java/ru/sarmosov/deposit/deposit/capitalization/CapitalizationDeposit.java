@@ -1,6 +1,6 @@
 package ru.sarmosov.deposit.deposit.capitalization;
 
-import ru.sarmosov.deposit.enums.PercentPaymentPeriod;
+import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

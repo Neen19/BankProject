@@ -2,15 +2,14 @@ package ru.sarmosov.deposit.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.sarmosov.bankstarter.enums.DepositType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Entity
 @Table(name = "deposits")
 public class DepositEntity {
@@ -20,14 +19,9 @@ public class DepositEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "deposit_account_id")
-    private Long bankAccountId;
-
-    @Column(name = "deposits_type_id")
-    private int typeId;
-
-    @Column(name = "deposit_refill")
-    private boolean isRefillable;
+    @ManyToOne
+    @JoinColumn(name = "id_deposits_types", nullable = false)
+    private DepositTypeEntity depositType;
 
     @Column(name = "deposits_amount")
     private BigDecimal balance;
@@ -41,25 +35,29 @@ public class DepositEntity {
     @Column(name = "deposit_rate")
     private BigDecimal percent;
 
-    @Column(name = "type_percent_payment_id")
-    private int typePercentPaymentId;
+    @Column(name = "period_percent_payment_id")
+    private int periodPercentPaymentId;
 
     @Column(name = "percent_payment_date")
     private LocalDate percentPaymentDate;
 
-    @Column(name = "percent_payment_account_id")
-    private Long percentPaymentAccountId;
-
     @Column(name = "capitalization")
     private boolean isCapitalization;
-
-    @Column(name = "is_withdrawable")
-    private boolean isWithdrawable;
-
-    @Column(name = "deposit_refund_account_id")
-    private Long depositRefundAccountId;
 
     @Column(name = "customer_token")
     private String token;
 
+    public DepositEntity(int typeId, boolean isRefillable, BigDecimal balance, LocalDate startDate, LocalDate endDate, BigDecimal percent, int periodPercentPaymentId, LocalDate percentPaymentDate, boolean isCapitalization, boolean isWithdrawal, String token) {
+        this.typeId = typeId;
+        this.isRefillable = isRefillable;
+        this.balance = balance;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.percent = percent;
+        this.periodPercentPaymentId = periodPercentPaymentId;
+        this.percentPaymentDate = percentPaymentDate;
+        this.isCapitalization = isCapitalization;
+        this.isWithdrawal = isWithdrawal;
+        this.token = token;
+    }
 }

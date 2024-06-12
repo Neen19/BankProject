@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import ru.sarmosov.bankstarter.dto.BalanceDTO;
+import ru.sarmosov.bankstarter.dto.ErrorResponseDTO;
 import ru.sarmosov.bankstarter.dto.TotalDTO;
 import ru.sarmosov.account.exception.InsufficientFundsException;
 import ru.sarmosov.bankstarter.exception.UserNotFoundException;
@@ -24,6 +25,7 @@ public class RestBankAccountController {
 
     @PostMapping("/decrease")
     public BalanceDTO decrease(@RequestHeader("Authorization") String token, @RequestBody TotalDTO totalDTO) {
+        System.out.println(token);
         return bankAccountService.decreaseBalance(token, totalDTO);
     }
 
@@ -38,8 +40,8 @@ public class RestBankAccountController {
     }
 
     @ExceptionHandler(InsufficientFundsException.class)
-    private ResponseEntity<String> handleException(InsufficientFundsException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    private ResponseEntity<ErrorResponseDTO> handleException(InsufficientFundsException e) {
+        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
 }

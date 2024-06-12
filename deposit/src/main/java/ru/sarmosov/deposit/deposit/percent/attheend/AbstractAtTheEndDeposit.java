@@ -1,7 +1,7 @@
 package ru.sarmosov.deposit.deposit.percent.attheend;
 
 import ru.sarmosov.deposit.deposit.AbstractDeposit;
-import ru.sarmosov.deposit.enums.PercentPaymentPeriod;
+import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
 import ru.sarmosov.deposit.util.NetworkUtils;
 
 import java.math.BigDecimal;
@@ -18,9 +18,13 @@ public abstract class AbstractAtTheEndDeposit extends AbstractDeposit {
 
     @Override
     public BigDecimal payPercent() {
-        BigDecimal percentSum = balance.multiply(percent.add(new BigDecimal(1)));
-        BigDecimal resBalance = NetworkUtils.increaseBalance(token, percentSum).getBalance();
-        endDate = LocalDate.now();
+
+        BigDecimal resBalance = balance;
+        if (LocalDate.now().equals(endDate)) {
+            BigDecimal percentSum = balance.multiply(percent.add(new BigDecimal(1)));
+            resBalance = NetworkUtils.increaseBalance(token, percentSum).getBalance();
+            endDate = LocalDate.now();
+        }
         return resBalance;
     }
 }

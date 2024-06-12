@@ -1,4 +1,4 @@
-package ru.sarmosov.deposit.enums;
+package ru.sarmosov.bankstarter.enums;
 
 import lombok.Getter;
 
@@ -14,4 +14,8 @@ public enum PercentPaymentPeriod {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

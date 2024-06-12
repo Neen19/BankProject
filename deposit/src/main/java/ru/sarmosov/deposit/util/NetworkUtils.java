@@ -5,11 +5,13 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import ru.sarmosov.bankstarter.dto.BalanceDTO;
 import ru.sarmosov.bankstarter.dto.TotalDTO;
+import ru.sarmosov.bankstarter.exception.InsufficientFundsException;
 import ru.sarmosov.bankstarter.exception.UserNotFoundException;
 
 import java.math.BigDecimal;
 
 public class NetworkUtils {
+
     private static final RestTemplate restTemplate = new RestTemplate();
 
     private static final String BASE_URL = "http://localhost:5252/api/account";
@@ -17,7 +19,7 @@ public class NetworkUtils {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
 
-    private static BalanceDTO httpRequestToAccount(String token, BigDecimal amount, String endpoint) {
+    private static BalanceDTO httpRequestToAccount(String token, BigDecimal amount, String endpoint) throws InsufficientFundsException {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -34,7 +36,7 @@ public class NetworkUtils {
         );
 
         if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new UserNotFoundException("User with this token not found");
+            throw new InsufficientFundsException("Insufficient funds on account");
         }
 
         return response.getBody();
@@ -44,7 +46,7 @@ public class NetworkUtils {
         return httpRequestToAccount(token, amount, "/increase");
     }
 
-    public static BalanceDTO decreaseBalance(String token, BigDecimal amount) {
+    public static BalanceDTO decreaseBalance(String token, BigDecimal amount) throws InsufficientFundsException {
         return httpRequestToAccount(token, amount, "/decrease");
     }
 

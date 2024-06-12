@@ -1,7 +1,7 @@
 package ru.sarmosov.deposit.deposit.percent.monthly;
 
 
-import ru.sarmosov.deposit.enums.PercentPaymentPeriod;
+import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

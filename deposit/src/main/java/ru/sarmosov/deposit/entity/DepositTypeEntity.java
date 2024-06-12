@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.sarmosov.deposit.enums.DepositType;
+import ru.sarmosov.bankstarter.enums.DepositType;
+
+import java.util.Set;
 
 
 @Getter
@@ -24,6 +26,9 @@ public class DepositTypeEntity {
     @Column(name = "deposits_types_name")
     @Enumerated(EnumType.STRING)
     private DepositType typeName;
+
+    @OneToMany(mappedBy = "id")
+    private Set<DepositEntity> deposits;
 
     public DepositTypeEntity(DepositType typeName) {
         this.typeName = typeName;

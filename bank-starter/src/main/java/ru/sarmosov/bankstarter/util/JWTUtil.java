@@ -15,6 +15,10 @@ public class JWTUtil {
 
     private final BankStarterProperties bankStarterProperties;
 
+    public String trimToken(String token) {
+        return token.replace("Bearer ", "");
+    }
+
     public CustomerDTO verifyTokenAndRetrievePhoneNumber(String token) {
 
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(bankStarterProperties.getSECRET()))
