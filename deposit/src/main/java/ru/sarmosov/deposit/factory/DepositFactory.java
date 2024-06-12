@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface DepositFactory {
 
-    DepositEntity convertRequestEntityToDepositEntity(RequestEntity request, String token);
+    DepositEntity convertRequestEntityToDepositEntity(RequestEntity request);
 
     List<AbstractDeposit> getDeposits(Iterable<DepositEntity> deposits);
 

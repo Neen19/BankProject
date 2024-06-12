@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.customerservice.service.CustomerDetailsService;
 import ru.sarmosov.bankstarter.util.JWTUtil;
 
@@ -50,7 +51,7 @@ public class JWTFilter extends OncePerRequestFilter {
         } else {
             String jwtToken = authHeader.replace("Bearer ", "");
             try {
-                String phoneNumber = jwtUtil.verifyTokenAndRetrievePhoneNumber(jwtToken).getPhoneNumber();
+                String phoneNumber = jwtUtil.verifyTokenAndRetrievePhoneNumber(jwtToken).getEmail();
 
                 UserDetails customerDetails = customerDetailsService.loadUserByUsername(phoneNumber);
 

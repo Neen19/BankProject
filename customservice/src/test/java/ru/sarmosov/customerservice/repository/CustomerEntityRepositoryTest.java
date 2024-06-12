@@ -22,26 +22,25 @@ public class CustomerEntityRepositoryTest {
 
     @BeforeEach
             void setUp() {
-        CustomerEntity customerEntity = CustomerEntity.builder()
-                .id(1L)
-                .bankAccountId(1L)
-                .phoneNumber("88005553535")
-                .password("password")
-                .build();
+        CustomerEntity customerEntity = new CustomerEntity(
+                1L,
+                "88005553535",
+                "password"
+        );
         userRepository.save(customerEntity);
     }
 
     @Test
     public void CustomerFoundFindByNumberTest() {
 
-        Optional<CustomerEntity> customerOptional = userRepository.findByPhoneNumber("88005553535");
+        Optional<CustomerEntity> customerOptional = userRepository.findByEmail("88005553535");
         assertTrue(customerOptional.isPresent());
-        assertEquals("88005553535", customerOptional.get().getPhoneNumber());
+        assertEquals("88005553535", customerOptional.get().getEmail());
     }
 
     @Test
     public void CustomerNotFoundFindByNumberTest() {
-        Optional<CustomerEntity> customerOptional = userRepository.findByPhoneNumber("123");
+        Optional<CustomerEntity> customerOptional = userRepository.findByEmail("123");
         assertFalse(customerOptional.isPresent());
     }
 }

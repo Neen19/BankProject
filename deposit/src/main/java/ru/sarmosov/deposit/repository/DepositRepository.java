@@ -11,10 +11,16 @@ import java.util.List;
 
 @Repository
 public interface DepositRepository extends CrudRepository<DepositEntity, Long> {
-    @Query("SELECT d FROM DepositEntity d WHERE d.isCapitalization = true or d.typePercentPaymentId = " +
-            "(SELECT p.id FROM PercentPaymentPeriodEntity p WHERE p.percentPaymentType = :percentPaymentType)")
+//    @Query("SELECT d FROM DepositEntity d WHERE d.isCapitalization = true or d.typePercentPaymentId = " +
+//            "(SELECT p.id FROM PercentPaymentPeriodEntity p WHERE p.percentPaymentType = :percentPaymentType)")
+//
+    @Query("SELECT d FROM DepositEntity d WHERE d.endDate < CURRENT_DATE")
+    Iterable<DepositEntity> findNotEnded();
 
-    List<DepositEntity> findDepositsByTypeAndMinPercent(
-            @Param("percentPaymentType") PercentPaymentType typeId
-    );
+    @Query("SELECT d FROM DepositEntity d WHERE d.depositType = (SELECT t FROM DepositTypeEntity t WHERE t.id = 1 or t.id = 2) ")
+    List<DepositEntity> findDepositable();
+
+    @Query("SELECT d FROM DepositEntity d WHERE d.depositType = (SELECT t FROM DepositTypeEntity t WHERE t.id = 1 )")
+    List<DepositEntity> findWithdrawal();
+
 }

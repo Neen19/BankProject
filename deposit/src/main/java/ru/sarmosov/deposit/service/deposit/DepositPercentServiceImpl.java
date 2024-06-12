@@ -1,6 +1,5 @@
 package ru.sarmosov.deposit.service.deposit;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,10 +18,10 @@ public class DepositPercentServiceImpl implements DepositPercentService {
     private final DepositFactory depositFactory;
     private final DepositService depositService;
 
-    @Scheduled(cron = "00 34 14 * * ?",  zone = "Europe/Moscow")
+    @Scheduled(cron = "00 00 12 * * ?",  zone = "Europe/Moscow")
     public void payPercent() {
         System.out.println("call");
-        Iterable<DepositEntity> deposits = repository.findAll();
+        Iterable<DepositEntity> deposits = repository.findNotEnded();
         deposits.forEach(this::refreshBalance);
     }
 

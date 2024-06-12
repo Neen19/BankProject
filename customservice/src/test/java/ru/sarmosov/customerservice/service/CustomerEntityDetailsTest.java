@@ -30,9 +30,9 @@ public class CustomerEntityDetailsTest {
 
         String phoneNumber = "1234567890";
         CustomerEntity customerEntity = new CustomerEntity();
-        customerEntity.setPhoneNumber(phoneNumber);
+        customerEntity.setEmail(phoneNumber);
 
-        when(customerRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(customerEntity));
+        when(customerRepository.findByEmail(phoneNumber)).thenReturn(Optional.of(customerEntity));
 
         UserDetails userDetails = customerDetailsService.loadUserByUsername(phoneNumber);
 
@@ -45,7 +45,7 @@ public class CustomerEntityDetailsTest {
 
         String phoneNumber = "1234567890";
 
-        when(customerRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
+        when(customerRepository.findByEmail(phoneNumber)).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class, () -> {
             customerDetailsService.loadUserByUsername(phoneNumber);

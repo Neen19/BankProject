@@ -23,30 +23,12 @@ import java.util.concurrent.*;
 @EnableTransactionManagement
 public class DepositConfiguration {
 
-    private final RequestRepository requestRepository;
-    private final RequestStatusRepository requestStatusRepository;
-    private final JWTUtil jwtUtil;
-
-    public DepositConfiguration(RequestRepository requestRepository, RequestStatusRepository requestStatusRepository, JWTUtil jwtUtil) {
-        this.requestRepository = requestRepository;
-        this.requestStatusRepository = requestStatusRepository;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Bean
     public DateTimeFormatter dateTimeFormatter() {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     }
 
-    @Bean
-    public DepositFactory factory(PercentPaymentPeriodRepository percentPaymentPeriodRepository, DepositTypeRepository depositTypeRepository) {
-        return new DepositFactoryImpl(percentPaymentPeriodRepository, depositTypeRepository);
-    }
-
-    @Bean
-    DepositService depositService(DepositRepository depositRepository) {
-        return new DepositServiceImpl(depositRepository);
-    }
 
     @Bean("futureService")
      ExecutorService futureService() {
@@ -56,12 +38,6 @@ public class DepositConfiguration {
     @Bean("taskService")
     ExecutorService taskService() {
         return Executors.newFixedThreadPool(10);
-    }
-
-
-    @Bean
-    RequestService requestService() {
-        return new RequestServiceImpl(requestRepository, requestStatusRepository);
     }
 
 
@@ -85,14 +61,6 @@ public class DepositConfiguration {
         return new ConcurrentHashMap<>();
     }
 
-//    @Bean
-//    ControllerService controllerService(RequestFactory factory) {
-//        return new ControllerServiceImpl(factory, requestHandler);
-//    }
 
-    @Bean
-    RequestFactory requestFactory(DepositFactory factory) {
-        return new RequestFactoryImpl(jwtUtil, requestStatusRepository, requestService());
-    }
 
 }

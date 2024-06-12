@@ -16,9 +16,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import ru.sarmosov.bankstarter.util.JWTUtil;
-import ru.sarmosov.customerservice.dto.AuthDTO;
+import ru.sarmosov.bankstarter.dto.AuthDTO;
 import ru.sarmosov.bankstarter.dto.CustomerDTO;
-import ru.sarmosov.customerservice.dto.TokenResponse;
+import ru.sarmosov.bankstarter.dto.TokenResponseDTO;
 import ru.sarmosov.customerservice.entity.CustomerEntity;
 import ru.sarmosov.customerservice.security.CustomerDetails;
 
@@ -45,7 +45,7 @@ public class JWTServiceTest {
     private JWTService jwtService;
 
     public static final String CUSTOMER_SUBJECT = "CUSTOMER_SUBJECT";
-    public static final String PHONE_NUMBER_CLAIM = "PHONE_NUMBER_CLAIM";
+    public static final String EMAIL_CLAIM = "EMAIL_CLAIM";
     public static final String BANK_ACCOUNT_ID_CLAIM = "BANK_ACCOUNT_ID_CLAIM";
     public static final String ID_CLAIM = "ID_CLAIM";
     public static final String SECRET = "secret_string";
@@ -55,7 +55,7 @@ public class JWTServiceTest {
     @BeforeEach
     void setUp() throws Exception {
         setPrivateField(jwtService, "CUSTOMER_SUBJECT", CUSTOMER_SUBJECT);
-        setPrivateField(jwtService, "PHONE_NUMBER_CLAIM", PHONE_NUMBER_CLAIM);
+        setPrivateField(jwtService, "EMAIL_CLAIM", EMAIL_CLAIM);
         setPrivateField(jwtService, "BANK_ACCOUNT_ID_CLAIM", BANK_ACCOUNT_ID_CLAIM);
         setPrivateField(jwtService, "ID_CLAIM", ID_CLAIM);
         setPrivateField(jwtService, "SECRET", SECRET);
@@ -72,11 +72,11 @@ public class JWTServiceTest {
     void testGetCustomerToken() throws Exception {
         // Given
         AuthDTO authDTO = new AuthDTO();
-        authDTO.setPhoneNumber("1234567890");
+        authDTO.setEmail("1234567890");
         authDTO.setPassword("password");
 
         CustomerDetails customerDetails = mock(CustomerDetails.class);
-        when(customerDetailsService.loadUserByUsername(authDTO.getPhoneNumber())).thenReturn(customerDetails);
+        when(customerDetailsService.loadUserByUsername(authDTO.getEmail())).thenReturn(customerDetails);
 
         CustomerEntity customerEntity = new CustomerEntity();
         when(customerDetails.getCustomerEntity()).thenReturn(customerEntity);
@@ -87,15 +87,15 @@ public class JWTServiceTest {
         String token = jwtService.generateToken(customerDTO);
 
         // When
-        TokenResponse tokenResponse = jwtService.getCustomerToken(authDTO);
+        TokenResponseDTO tokenResponseDTO = jwtService.getCustomerToken(authDTO);
 
         // Then
-        assertNotNull(tokenResponse);
-        assertEquals(token, tokenResponse.getToken());
+        assertNotNull(tokenResponseDTO);
+        assertEquals(token, tokenResponseDTO.getToken());
 
         // Verify
         verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(customerDetailsService, times(1)).loadUserByUsername(authDTO.getPhoneNumber());
+        verify(customerDetailsService, times(1)).loadUserByUsername(authDTO.getEmail());
         verify(modelMapper, times(1)).map(customerEntity, CustomerDTO.class);
     }
 
@@ -104,7 +104,7 @@ public class JWTServiceTest {
     void testGenerateToken() {
 
         CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setPhoneNumber("1234567890");
+        customerDTO.setEmail("1234567890");
         customerDTO.setBankAccountId(10L);
         customerDTO.setId(10L);
 
@@ -112,7 +112,7 @@ public class JWTServiceTest {
 
         String expectedToken = JWT.create()
                 .withSubject(CUSTOMER_SUBJECT)
-                .withClaim(PHONE_NUMBER_CLAIM, customerDTO.getPhoneNumber())
+                .withClaim(EMAIL_CLAIM, customerDTO.getEmail())
                 .withClaim(BANK_ACCOUNT_ID_CLAIM, customerDTO.getBankAccountId())
                 .withClaim(ID_CLAIM, customerDTO.getId())
                 .withIssuedAt(new Date())

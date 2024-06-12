@@ -1,4 +1,4 @@
-package ru.sarmosov.deposit.service.handler;
+package ru.sarmosov.deposit.handler;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,15 +56,12 @@ public class RequestHandler {
     @Scheduled(fixedDelay = 4000)
     public void executeTask() throws Throwable {
         try {
-            System.out.println(taskQueue.size());
             if (!taskQueue.isEmpty()) {
                 RequestEntity request = taskQueue.take();
-                System.out.println(request.getEmail());
                 Future<RequestEntity> future = executorService.submit(new RequestTask(request, request.getEmail()));
                 futureQueue.add(Pair.of(request, future));
             }
         } catch (Throwable e) {
-            System.out.println("something went wrong");
             System.out.println(e.getMessage());
         }
 
@@ -88,8 +85,8 @@ public class RequestHandler {
             mailService.sendMail(
                     email,
                     "Verification code",
-                    "Your verfication code is " + code +"\n" +
-                            "Your reqiest id is" + request.getId()
+                    "Your verification code is " + code +"\n" +
+                            "Your request id is" + request.getId()
             );
             System.out.println("send email");
             while (!codeMap.containsKey(request.getId())) {

@@ -1,4 +1,4 @@
-package ru.sarmosov.deposit.service.handler;
+package ru.sarmosov.deposit.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.deposit.entity.RequestEntity;
 import ru.sarmosov.deposit.exception.TimeLimitException;
 import ru.sarmosov.deposit.service.request.RequestService;
@@ -30,7 +31,6 @@ public class FutureTaskHandler {
         this.futureQueue = futureQueue;
         this.handledQueue = handledQueue;
     }
-
 
     @Scheduled(fixedDelay = 4000)
     public void handledRequest() throws Throwable{

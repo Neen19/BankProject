@@ -3,6 +3,7 @@ package ru.sarmosov.account.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.bankstarter.dto.BalanceDTO;
 import ru.sarmosov.bankstarter.dto.CustomerDTO;
 import ru.sarmosov.bankstarter.dto.TotalDTO;
@@ -23,6 +24,7 @@ public class BankAccountService implements BankAccountInterface {
     private final BankAccountRepository bankAccountRepository;
     private final JWTUtil jwtUtil;
 
+    @Logging(value = "Получение баланса пользователя")
     public BalanceDTO getBalance(String header) {
         String token = getTokenFromHeader(header);
         CustomerDTO dto = jwtUtil.verifyTokenAndRetrievePhoneNumber(token);
@@ -31,6 +33,7 @@ public class BankAccountService implements BankAccountInterface {
     }
 
 
+    @Logging(value = "Пополнение баланса")
     public BalanceDTO increaseBalance(String header, TotalDTO totalDTO) {
         String token = getTokenFromHeader(header);
         CustomerDTO customerDTO = jwtUtil.verifyTokenAndRetrievePhoneNumber(token);
@@ -43,7 +46,8 @@ public class BankAccountService implements BankAccountInterface {
     }
 
 
-    public BalanceDTO decreaseBalance(String header, TotalDTO totalDTO) {
+//    @Logging(value = "Уменьшение баланса")
+    public BalanceDTO decreaseBalance(String header, TotalDTO totalDTO) throws IllegalArgumentException {
         String token = getTokenFromHeader(header);
         CustomerDTO customerDTO = jwtUtil.verifyTokenAndRetrievePhoneNumber(token);
         BankAccountEntity account = bankAccountRepository.findById(customerDTO.getBankAccountId()).orElseThrow(
@@ -56,6 +60,7 @@ public class BankAccountService implements BankAccountInterface {
         return new BalanceDTO(account.getBalance());
     }
 
+    @Logging(value = "Получение токена из тела хэдера")
     private String getTokenFromHeader (String header) {
         return header.replace("Bearer ", "");
     }

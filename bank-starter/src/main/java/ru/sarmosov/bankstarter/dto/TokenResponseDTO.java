@@ -7,11 +7,10 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @ToString
-public class ErrorResponseDTO {
+public class TokenResponseDTO {
 
-    @NotBlank(message = "error can't be blank")
-    String error;
+    @NotBlank(message = "token can't be blank")
+    private String token;
 
 }

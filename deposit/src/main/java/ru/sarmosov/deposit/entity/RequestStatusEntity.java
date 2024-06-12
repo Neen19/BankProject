@@ -15,7 +15,6 @@ import java.util.Set;
 @Table(name = "request_statuses")
 public class RequestStatusEntity {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_request_status")

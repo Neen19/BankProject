@@ -10,10 +10,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.bankstarter.util.JWTUtil;
-import ru.sarmosov.customerservice.dto.AuthDTO;
+import ru.sarmosov.bankstarter.dto.AuthDTO;
 import ru.sarmosov.bankstarter.dto.CustomerDTO;
-import ru.sarmosov.customerservice.dto.TokenResponse;
+import ru.sarmosov.bankstarter.dto.TokenResponseDTO;
 import ru.sarmosov.customerservice.entity.CustomerEntity;
 import ru.sarmosov.customerservice.security.CustomerDetails;
 
@@ -25,15 +26,14 @@ import java.util.Date;
 public class JWTService {
 
     private final AuthenticationManager authenticationManager;
-    private final JWTUtil jwtUtil;
     private final CustomerDetailsService customerDetailsService;
     private final ModelMapper modelMapper;
 
     @Value("${jwt.customer-subject}")
     private String CUSTOMER_SUBJECT;
 
-    @Value("${jwt.phone-number-claim}")
-    private String PHONE_NUMBER_CLAIM;
+    @Value("${jwt.email-claim}")
+    private String EMAIL_CLAIM;
 
     @Value("${jwt.bank-account-id-claim}")
     private String BANK_ACCOUNT_ID_CLAIM;
@@ -49,42 +49,30 @@ public class JWTService {
 
 
 
-    public TokenResponse getCustomerToken(AuthDTO authDTO) throws BadCredentialsException {
+    @Logging(value = "Проверка наличия пользователя и попытка загрузить токен")
+    public TokenResponseDTO getCustomerToken(AuthDTO authDTO) throws BadCredentialsException {
 
         UsernamePasswordAuthenticationToken authInputToken =
-                new UsernamePasswordAuthenticationToken(authDTO.getPhoneNumber(),
+                new UsernamePasswordAuthenticationToken(authDTO.getEmail(),
                         authDTO.getPassword());
 
         authenticationManager.authenticate(authInputToken);
 
-        System.out.println(authDTO.getPhoneNumber());
-
-        CustomerDetails customerDetails = (CustomerDetails) customerDetailsService.loadUserByUsername(authDTO.getPhoneNumber());
+        CustomerDetails customerDetails = (CustomerDetails) customerDetailsService.loadUserByUsername(authDTO.getEmail());
 
         CustomerDTO dto = modelMapper.map(customerDetails.getCustomerEntity(), CustomerDTO.class);
 
-        System.out.println(dto.toString());
-
-        return new TokenResponse(generateToken(dto));
+        TokenResponseDTO tokenResponseDTO = new TokenResponseDTO(generateToken(dto));
+        return tokenResponseDTO;
     }
 
-    public CustomerEntity getCustomerByToken(String token) throws BadCredentialsException {
-        String jwtToken = token.replace("Bearer ", "");
-        try {
-            String phoneNumber = jwtUtil.verifyTokenAndRetrievePhoneNumber(jwtToken).getPhoneNumber();
-            CustomerDetails details = (CustomerDetails) customerDetailsService.loadUserByUsername(phoneNumber);
-            return details.getCustomerEntity();
 
-        } catch (JWTVerificationException e) {
-            throw new BadCredentialsException("Invalid JWT token");
-        }
-    }
-
+    @Logging(value = "Генерация токена")
     public String generateToken(CustomerDTO customerDTO) {
 
         return JWT.create()
                 .withSubject(CUSTOMER_SUBJECT)
-                .withClaim(PHONE_NUMBER_CLAIM, customerDTO.getPhoneNumber())
+                .withClaim(EMAIL_CLAIM, customerDTO.getEmail())
                 .withClaim(BANK_ACCOUNT_ID_CLAIM, customerDTO.getBankAccountId())
                 .withClaim(ID_CLAIM, customerDTO.getId())
                 .withIssuedAt(new Date())

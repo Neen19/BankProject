@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("jwt")
 public class BankStarterProperties {
 
-    public String PHONE_NUMBER_CLAIM = "phoneNumber";
+    public String EMAIL_CLAIM = "email";
     public String CUSTOMER_SUBJECT = "customerSubject";
     public String BANK_ACCOUNT_ID_CLAIM = "bankid";
     public String ID_CLAIM = "id";

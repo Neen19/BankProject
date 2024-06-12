@@ -1,6 +1,7 @@
 package ru.sarmosov.deposit.factory;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.sarmosov.deposit.deposit.AbstractDeposit;
 import ru.sarmosov.deposit.deposit.capitalization.CapitalizationDeposit;
 import ru.sarmosov.deposit.deposit.capitalization.DepositableCapitalizationDeposit;
@@ -15,43 +16,41 @@ import ru.sarmosov.deposit.entity.DepositEntity;
 import ru.sarmosov.deposit.entity.RequestEntity;
 import ru.sarmosov.bankstarter.enums.DepositType;
 import ru.sarmosov.bankstarter.enums.PercentPaymentType;
-import ru.sarmosov.deposit.repository.DepositTypeRepository;
-import ru.sarmosov.deposit.repository.PercentPaymentPeriodRepository;
+import ru.sarmosov.deposit.service.deposit.DepositTypeService;
+import ru.sarmosov.deposit.service.deposit.DepositTypeServiceImpl;
+import ru.sarmosov.deposit.service.deposit.PercentPaymentPeriodService;
+import ru.sarmosov.deposit.service.deposit.PercentPaymentPeriodServiceImpl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 
-
+@Component
 @RequiredArgsConstructor
 public class DepositFactoryImpl implements DepositFactory {
 
-    private final PercentPaymentPeriodRepository paymentTypeRepository;
-    private final DepositTypeRepository depositTypeRepository;
+    private final DepositTypeService typeService;
+    private final PercentPaymentPeriodService periodService;
 
 
     @Override
-    public DepositEntity convertRequestEntityToDepositEntity(RequestEntity request, String token) {
-
-
-        DepositEntity depositEntity = new DepositEntity (
-            request.getAccountId(),
-                request.getDepositType().getId(),
-                request.isRefillable(),
+    public DepositEntity convertRequestEntityToDepositEntity(RequestEntity request) {
+        return new DepositEntity (
+                typeService.getPersistenceEntity(request.getDepositType()),
                 request.getAmount(),
-                LocalDate.now(),
-                LocalDate.now().plusMonths(3),
+                request.getRequestDate(),
+                calculateEndDate(request),
                 request.getPercent(),
-                1,
-                LocalDate.now().plusMonths(1),
-                request.getCustomerId(),
-                false,
-                request.isWithdrawal(),
-                request.getCustomerId(),
-                token
+                periodService.getPersistenceEntity(request.getPeriod()),
+                request.isCapitalization(),
+                request.isMonthly(),
+                request.getToken()
         );
-        return depositEntity;
+    }
+
+    private LocalDate calculateEndDate(RequestEntity request) {
+        return request.getRequestDate().plusMonths(request.getPeriod().getValue());
     }
 
     @Override
@@ -63,12 +62,17 @@ public class DepositFactoryImpl implements DepositFactory {
         return result;
     }
 
+    private PercentPaymentType getPercentPaymentType(DepositEntity deposit) {
+        if (deposit.isMonthly()) return PercentPaymentType.MONTHLY;
+        return PercentPaymentType.AT_THE_END;
+    }
+
 
     @Override
     public AbstractDeposit convertDepositEntityToAbstractDeposit(DepositEntity depositEntity) {
         AbstractDeposit deposit;
 
-        DepositType depositType = depositTypeRepository.findById(depositEntity.getTypeId()).orElseThrow().getTypeName();
+        DepositType depositType = depositEntity.getDepositType().getTypeName();
 
         if (depositEntity.isCapitalization()) {
 
@@ -77,7 +81,7 @@ public class DepositFactoryImpl implements DepositFactory {
                         depositEntity.getBalance(),
                         depositEntity.getPercent(),
                         depositEntity.getPercentPaymentDate(),
-                        paymentTypeRepository.findById(depositEntity.getPeriodPercentPaymentId()).orElseThrow().getPeriod(),
+                        depositEntity.getPeriodEntity().getPeriod(),
                         depositEntity.getStartDate(),
                         depositEntity.getEndDate()
                 );
@@ -86,7 +90,7 @@ public class DepositFactoryImpl implements DepositFactory {
                         depositEntity.getBalance(),
                         depositEntity.getPercent(),
                         depositEntity.getPercentPaymentDate(),
-                        paymentTypeRepository.findById(depositEntity.getTypePercentPaymentId()).orElseThrow().getPeriod(),
+                        depositEntity.getPeriodEntity().getPeriod(),
                         depositEntity.getStartDate(),
                         depositEntity.getEndDate()
                 );
@@ -95,14 +99,14 @@ public class DepositFactoryImpl implements DepositFactory {
                         depositEntity.getBalance(),
                         depositEntity.getPercent(),
                         depositEntity.getPercentPaymentDate(),
-                        paymentTypeRepository.findById(depositEntity.getTypePercentPaymentId()).orElseThrow().getPeriod(),
+                        depositEntity.getPeriodEntity().getPeriod(),
                         depositEntity.getStartDate(),
                         depositEntity.getEndDate()
                 );
             }
 
         } else {
-            PercentPaymentType type = paymentTypeRepository.findById(depositEntity.getTypePercentPaymentId()).orElseThrow().getPercentPaymentType();
+            PercentPaymentType type = getPercentPaymentType(depositEntity);
             if (type.equals(PercentPaymentType.AT_THE_END)) {
 
                 if (depositType.equals(DepositType.WITH_DEPOSIT_AND_WITHDRAWAL)) {
@@ -110,7 +114,7 @@ public class DepositFactoryImpl implements DepositFactory {
                             depositEntity.getBalance(),
                             depositEntity.getPercent(),
                             depositEntity.getPercentPaymentDate(),
-                            paymentTypeRepository.findById(depositEntity.getTypePercentPaymentId()).orElseThrow().getPeriod(),
+                            depositEntity.getPeriodEntity().getPeriod(),
                             depositEntity.getStartDate(),
                             depositEntity.getEndDate(),
                             depositEntity.getToken()
@@ -120,7 +124,7 @@ public class DepositFactoryImpl implements DepositFactory {
                             depositEntity.getBalance(),
                             depositEntity.getPercent(),
                             depositEntity.getPercentPaymentDate(),
-                            paymentTypeRepository.findById(depositEntity.getTypePercentPaymentId()).orElseThrow().getPeriod(),
+                            depositEntity.getPeriodEntity().getPeriod(),
                             depositEntity.getStartDate(),
                             depositEntity.getEndDate(),
                             depositEntity.getToken()
@@ -130,7 +134,7 @@ public class DepositFactoryImpl implements DepositFactory {
                             depositEntity.getBalance(),
                             depositEntity.getPercent(),
                             depositEntity.getPercentPaymentDate(),
-                            paymentTypeRepository.findById(depositEntity.getTypePercentPaymentId()).orElseThrow().getPeriod(),
+                            depositEntity.getPeriodEntity().getPeriod(),
                             depositEntity.getStartDate(),
                             depositEntity.getEndDate(),
                             depositEntity.getToken()
@@ -143,7 +147,7 @@ public class DepositFactoryImpl implements DepositFactory {
                             depositEntity.getBalance(),
                             depositEntity.getPercent(),
                             depositEntity.getPercentPaymentDate(),
-                            paymentTypeRepository.findById(depositEntity.getTypePercentPaymentId()).orElseThrow().getPeriod(),
+                            depositEntity.getPeriodEntity().getPeriod(),
                             depositEntity.getStartDate(),
                             depositEntity.getEndDate(),
                             depositEntity.getToken()
@@ -153,7 +157,7 @@ public class DepositFactoryImpl implements DepositFactory {
                             depositEntity.getBalance(),
                             depositEntity.getPercent(),
                             depositEntity.getPercentPaymentDate(),
-                            paymentTypeRepository.findById(depositEntity.getTypePercentPaymentId()).orElseThrow().getPeriod(),
+                            depositEntity.getPeriodEntity().getPeriod(),
                             depositEntity.getStartDate(),
                             depositEntity.getEndDate(),
                             depositEntity.getToken()
@@ -163,7 +167,7 @@ public class DepositFactoryImpl implements DepositFactory {
                             depositEntity.getBalance(),
                             depositEntity.getPercent(),
                             depositEntity.getPercentPaymentDate(),
-                            paymentTypeRepository.findById(depositEntity.getTypePercentPaymentId()).orElseThrow().getPeriod(),
+                            depositEntity.getPeriodEntity().getPeriod(),
                             depositEntity.getStartDate(),
                             depositEntity.getEndDate(),
                             depositEntity.getToken()

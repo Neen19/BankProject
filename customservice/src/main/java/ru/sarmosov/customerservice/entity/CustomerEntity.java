@@ -5,9 +5,7 @@ import lombok.*;
 
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity(name = "customers")
 public class CustomerEntity {
 
@@ -19,11 +17,15 @@ public class CustomerEntity {
     @Column(name = "bank_account_id")
     private Long bankAccountId;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    @Column(name = "customer_email")
+    private String email;
 
     @Column(name = "password")
     private String password;
 
-
+    public CustomerEntity(Long bankAccountId, String email, String password) {
+        this.bankAccountId = bankAccountId;
+        this.email = email;
+        this.password = password;
+    }
 }

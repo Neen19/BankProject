@@ -15,6 +15,10 @@ public abstract class AbstractDeposit {
 
     public abstract BigDecimal payPercent();
 
+    public void shutDown() {
+        endDate = LocalDate.now();
+    }
+
     protected BigDecimal balance;
 
     protected BigDecimal percent;

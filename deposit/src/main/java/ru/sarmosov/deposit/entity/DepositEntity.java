@@ -3,6 +3,7 @@ package ru.sarmosov.deposit.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import ru.sarmosov.bankstarter.enums.DepositType;
+import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,8 +36,9 @@ public class DepositEntity {
     @Column(name = "deposit_rate")
     private BigDecimal percent;
 
-    @Column(name = "period_percent_payment_id")
-    private int periodPercentPaymentId;
+    @ManyToOne
+    @JoinColumn(name = "id_type_percent_payment", nullable = false)
+    private PercentPaymentPeriodEntity periodEntity;
 
     @Column(name = "percent_payment_date")
     private LocalDate percentPaymentDate;
@@ -44,20 +46,31 @@ public class DepositEntity {
     @Column(name = "capitalization")
     private boolean isCapitalization;
 
+    @Column(name = "is_monthly")
+    private boolean isMonthly;
+
     @Column(name = "customer_token")
     private String token;
 
-    public DepositEntity(int typeId, boolean isRefillable, BigDecimal balance, LocalDate startDate, LocalDate endDate, BigDecimal percent, int periodPercentPaymentId, LocalDate percentPaymentDate, boolean isCapitalization, boolean isWithdrawal, String token) {
-        this.typeId = typeId;
-        this.isRefillable = isRefillable;
+    public DepositEntity(
+            DepositTypeEntity depositType,
+            BigDecimal balance,
+            LocalDate startDate,
+            LocalDate endDate,
+            BigDecimal percent,
+            PercentPaymentPeriodEntity periodEntity,
+            boolean isCapitalization,
+            boolean isMonthly,
+            String token) {
+        this.depositType = depositType;
         this.balance = balance;
         this.startDate = startDate;
         this.endDate = endDate;
         this.percent = percent;
-        this.periodPercentPaymentId = periodPercentPaymentId;
-        this.percentPaymentDate = percentPaymentDate;
+        this.periodEntity = periodEntity;
         this.isCapitalization = isCapitalization;
-        this.isWithdrawal = isWithdrawal;
+        this.isMonthly = isMonthly;
         this.token = token;
+        this.percentPaymentDate = startDate.plusMonths(periodEntity.getPeriod().getValue());
     }
 }

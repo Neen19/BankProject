@@ -10,7 +10,6 @@ abstract class AbstractCapitalizationDeposit extends AbstractDeposit {
 
     @Override
     public BigDecimal payPercent() {
-
         if (LocalDate.now().equals(percentPaymentDate)) {
             balance = balance.multiply(percent.add(new BigDecimal(1)));
             LocalDate depositEndDate = startDate.plusMonths(period.getValue());

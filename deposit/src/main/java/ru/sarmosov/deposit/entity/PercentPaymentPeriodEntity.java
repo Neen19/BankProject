@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
+import ru.sarmosov.deposit.converter.PercentPaymentPeriodConverter;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,15 +23,15 @@ public class PercentPaymentPeriodEntity {
     @Column(name = "id_type_percent_payment")
     private int id;
 
-    @Column(name = "percent_payment_period_name")
-    private String name;
+    @Convert(converter = PercentPaymentPeriodConverter.class)
+    private PercentPaymentPeriod period;
 
-    @Column(name = "percent_payment_period")
-    private int period;
+    @OneToMany(mappedBy = "id")
+    private Set<DepositEntity> deposits;
 
     public PercentPaymentPeriodEntity(PercentPaymentPeriod period) {
-        this.name = period.name();
-        this.period = period.getValue();
+        this.period = period;
     }
+
 
 }

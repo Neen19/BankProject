@@ -29,7 +29,7 @@ public class CustomerDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return customerEntity.getPhoneNumber();
+        return customerEntity.getEmail();
     }
 
     @Override

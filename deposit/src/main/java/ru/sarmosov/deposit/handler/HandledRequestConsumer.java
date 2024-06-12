@@ -1,7 +1,6 @@
-package ru.sarmosov.deposit.service.handler;
+package ru.sarmosov.deposit.handler;
 
 
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -16,22 +15,19 @@ import ru.sarmosov.deposit.service.request.RequestService;
 import ru.sarmosov.deposit.util.NetworkUtils;
 
 import java.math.BigDecimal;
-import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 
 @Service
-public class Consumer {
+public class HandledRequestConsumer {
 
     private final RequestService requestService;
     private final BlockingQueue<RequestEntity> handledQueue;
-    private final RequestHandler handler;
     private final DepositService depositService;
     private final DepositFactory depositFactory;
 
-    public Consumer(@Qualifier("handledQueue") BlockingQueue<RequestEntity> handledQueue, RequestService requestService, RequestHandler handler, DepositService depositService, DepositFactory depositFactory) {
+    public HandledRequestConsumer(@Qualifier("handledQueue") BlockingQueue<RequestEntity> handledQueue, RequestService requestService, DepositService depositService, DepositFactory depositFactory) {
         this.handledQueue = handledQueue;
         this.requestService = requestService;
-        this.handler = handler;
         this.depositService = depositService;
         this.depositFactory = depositFactory;
     }
@@ -49,7 +45,7 @@ public class Consumer {
                 System.out.println(entity.getToken());
                 NetworkUtils.decreaseBalance(entity.getToken(), entity.getAmount());
                 System.out.println(entity);
-                DepositEntity deposit = depositFactory.convertRequestEntityToDepositEntity(entity, entity.getToken());
+                DepositEntity deposit = depositFactory.convertRequestEntityToDepositEntity(entity);
                 System.out.println(deposit);
                 depositService.addDeposit(deposit);
             } catch (InsufficientFundsException e) {
