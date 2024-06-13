@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.bankstarter.util.JWTUtil;
 import ru.sarmosov.deposit.entity.RequestEntity;
 import ru.sarmosov.bankstarter.enums.RequestStatus;
@@ -52,11 +53,12 @@ public class RequestHandler {
     }
 
 
+    @Logging(value = "Добавление в очередь обработки нового запроса")
     public void addRequest(RequestEntity request) {
         taskQueue.add(request);
     }
 
-
+//    @Logging(value = "Попытка получить из очереди запрос на обработку")
     @Scheduled(fixedDelay = 4000)
     public void executeTask() throws Throwable {
         try {

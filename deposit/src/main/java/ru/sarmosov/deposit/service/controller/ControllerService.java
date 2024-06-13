@@ -23,7 +23,7 @@ public interface ControllerService {
 
     DepositTotalDTO decreaseDepositBalance(DepositTotalDTO depositTotalDTO, String token) throws DepositNotFountException;
 
-    List<DepositDTO> getDeposits(String toke);
+    List<DepositDTO> getDeposits(String token);
 
     List<RequestResponseDTO> getRequests(String token);
 }

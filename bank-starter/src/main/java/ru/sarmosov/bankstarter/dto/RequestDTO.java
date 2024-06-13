@@ -40,5 +40,8 @@ public class RequestDTO {
     @NotNull(message = "payment period can't be blank")
     private PercentPaymentPeriod paymentPeriod;
 
+    @NotNull(message = "The field must not be null")
+    private boolean isCapitalization;
+
 
 }

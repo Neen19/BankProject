@@ -35,7 +35,7 @@ public class FutureTaskHandler {
         this.requestService = requestService;
     }
 
-//    @Logging(value = "Обработка ошибок")
+//    @Logging(value = "Попытка получить из очереди Future и дождаться его выполнения")
     @Scheduled(fixedDelay = 4000)
     public void handledRequest() throws Throwable {
 

@@ -19,7 +19,7 @@ public interface DepositService {
 
     DepositTotalDTO decreaseBalance(DepositTotalDTO depositTotalDTO, String token) throws DepositNotFountException;
 
-    List<DepositEntity> getCustomerDeposits(String token);
+    List<DepositEntity> getCustomerDeposits(Long id);
 
 
 }

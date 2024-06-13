@@ -1,5 +1,6 @@
 package ru.sarmosov.deposit.deposit.percent.monthly;
 
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.deposit.deposit.interfaces.Depositable;
 import ru.sarmosov.deposit.deposit.interfaces.Withdrawable;
 import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
@@ -19,6 +20,7 @@ public class MonthlyDepositableWithdrawablePercentDeposit extends AbstractMonthl
         return NetworkUtils.increaseBalance(token, amount).getBalance();
     }
 
+    @Logging(value = "Снятие денег со вклада")
     @Override
     public BigDecimal withdraw(BigDecimal amount) {
         return NetworkUtils.decreaseBalance(token, amount).getBalance();

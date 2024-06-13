@@ -1,11 +1,10 @@
 package ru.sarmosov.account.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,6 +22,7 @@ import ru.sarmosov.bankstarter.exception.UserNotFoundException;
 import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,72 +34,93 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class RestBankAccountControllerTest {
 
+
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private BankAccountService bankAccountService;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    private String token = "Bearer some-token";
+
+
     @Test
     public void testIncreaseBalance() throws Exception {
-        BalanceDTO balanceDTO = new BalanceDTO(new BigDecimal("1000.00"));
-        TotalDTO totalDTO = new TotalDTO(new BigDecimal("500.00"));
+        TotalDTO totalDTO = new TotalDTO();
+        totalDTO.setTotal(new BigDecimal(100));
+        BalanceDTO balanceDTO = new BalanceDTO();
+        balanceDTO.setBalance(new BigDecimal(110));
 
-        when(bankAccountService.increaseBalance(any(String.class), any(TotalDTO.class))).thenReturn(balanceDTO);
+        Mockito.when(bankAccountService.increaseBalance(anyString(), any(TotalDTO.class)))
+                .thenReturn(balanceDTO);
 
         mockMvc.perform(post("/api/account/increase")
-                        .header("Authorization", "Bearer token")
+                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"amount\": 500}"))
+                        .content(objectMapper.writeValueAsString(totalDTO)))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"balance\": 1000}"));
+                .andExpect(content().json(objectMapper.writeValueAsString(balanceDTO)));
     }
 
     @Test
     public void testDecreaseBalance() throws Exception {
-        BalanceDTO balanceDTO = new BalanceDTO(new BigDecimal("500.00"));
-        TotalDTO totalDTO = new TotalDTO(new BigDecimal("500.00"));
+        TotalDTO totalDTO = new TotalDTO();
+        totalDTO.setTotal(new BigDecimal(100));
+        BalanceDTO balanceDTO = new BalanceDTO();
+        balanceDTO.setBalance(new BigDecimal(900));
 
-        when(bankAccountService.decreaseBalance(any(String.class), any(TotalDTO.class))).thenReturn(balanceDTO);
+        Mockito.when(bankAccountService.decreaseBalance(anyString(), any(TotalDTO.class)))
+                .thenReturn(balanceDTO);
 
         mockMvc.perform(post("/api/account/decrease")
-                        .header("Authorization", "Bearer token")
+                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"amount\": 500}"))
+                        .content(objectMapper.writeValueAsString(totalDTO)))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"balance\": 500}"));
+                .andExpect(content().json(objectMapper.writeValueAsString(balanceDTO)));
     }
 
     @Test
     public void testGetBalance() throws Exception {
-        BalanceDTO balanceDTO = new BalanceDTO(new BigDecimal("1000.00"));
+        BalanceDTO balanceDTO = new BalanceDTO();
+        balanceDTO.setBalance(new BigDecimal(1000));
 
-        when(bankAccountService.getBalance(any(String.class))).thenReturn(balanceDTO);
+        Mockito.when(bankAccountService.getBalance(anyString()))
+                .thenReturn(balanceDTO);
 
         mockMvc.perform(get("/api/account/balance")
-                        .header("Authorization", "Bearer token"))
+                        .header("Authorization", token))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"balance\": 1000}"));
+                .andExpect(content().json(objectMapper.writeValueAsString(balanceDTO)));
     }
 
     @Test
     public void testHandleUserNotFoundException() throws Exception {
-        when(bankAccountService.getBalance(any(String.class))).thenThrow(new UserNotFoundException("User not found"));
+        Mockito.when(bankAccountService.getBalance(anyString()))
+                .thenThrow(new UserNotFoundException("User not found"));
 
         mockMvc.perform(get("/api/account/balance")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isUnauthorized())
+                        .header("Authorization", token))
+                .andExpect(status().isForbidden())
                 .andExpect(content().string("User not found"));
     }
 
     @Test
     public void testHandleInsufficientFundsException() throws Exception {
-        when(bankAccountService.decreaseBalance(any(String.class), any(TotalDTO.class))).thenThrow(new InsufficientFundsException("Insufficient funds"));
+        TotalDTO totalDTO = new TotalDTO();
+        totalDTO.setTotal(new BigDecimal(100));
+
+        Mockito.when(bankAccountService.decreaseBalance(anyString(), any(TotalDTO.class)))
+                .thenThrow(new InsufficientFundsException("Insufficient funds"));
 
         mockMvc.perform(post("/api/account/decrease")
-                        .header("Authorization", "Bearer token")
+                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"amount\": 1000}"))
-                .andExpect(status().isBadRequest());
+                        .content(objectMapper.writeValueAsString(totalDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(objectMapper.writeValueAsString(new ErrorResponseDTO("Insufficient funds"))));
     }
+
 }

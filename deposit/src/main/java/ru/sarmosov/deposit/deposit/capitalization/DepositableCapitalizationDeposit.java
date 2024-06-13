@@ -1,5 +1,6 @@
 package ru.sarmosov.deposit.deposit.capitalization;
 
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.deposit.deposit.interfaces.Depositable;
 import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
 
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 
 public class DepositableCapitalizationDeposit extends AbstractCapitalizationDeposit implements Depositable {
 
+    @Logging(value = "Снятие денег со вклада")
     @Override
     public BigDecimal deposit(BigDecimal amount) {
         balance = balance.add(amount);

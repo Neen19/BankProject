@@ -1,6 +1,7 @@
 package ru.sarmosov.deposit.deposit;
 
 import lombok.*;
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
 
 
@@ -15,6 +16,7 @@ public abstract class AbstractDeposit {
 
     public abstract BigDecimal payPercent();
 
+    @Logging(value = "Закрытие вклада")
     public void shutDown() {
         endDate = LocalDate.now();
     }

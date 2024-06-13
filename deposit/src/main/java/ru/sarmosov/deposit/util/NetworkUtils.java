@@ -2,6 +2,8 @@ package ru.sarmosov.deposit.util;
 
 
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import ru.sarmosov.bankstarter.dto.BalanceDTO;
 import ru.sarmosov.bankstarter.dto.TotalDTO;
@@ -19,7 +21,7 @@ public class NetworkUtils {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
 
-    private static BalanceDTO httpRequestToAccount(String token, BigDecimal amount, String endpoint) throws InsufficientFundsException {
+    private static BalanceDTO httpRequestToAccount(String token, BigDecimal amount, String endpoint) throws HttpClientErrorException, ResourceAccessException {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -34,10 +36,6 @@ public class NetworkUtils {
                 entity,
                 BalanceDTO.class
         );
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new InsufficientFundsException("Insufficient funds on account");
-        }
 
         return response.getBody();
     }

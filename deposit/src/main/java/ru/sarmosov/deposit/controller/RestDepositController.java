@@ -6,8 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.bankstarter.dto.*;
+import ru.sarmosov.bankstarter.exception.InsufficientFundsException;
 import ru.sarmosov.deposit.dto.DepositDTO;
 import ru.sarmosov.deposit.dto.RequestResponseDTO;
 import ru.sarmosov.deposit.exception.ConstructorException;
@@ -27,7 +29,8 @@ public class RestDepositController {
 
     @Logging(value = "Вызов request эндпоинта")
     @PostMapping("/request")
-    public String increase(@RequestHeader("Authorization") String token, @Valid @RequestBody RequestDTO request) {
+    public String increase(@RequestHeader("Authorization") String token,
+                           @Valid @RequestBody RequestDTO request) {
         controllerService.sendRequest(request, token);
         return "Request received";
     }
@@ -83,20 +86,36 @@ public class RestDepositController {
 
 
 
+    @Logging(value = "Ошибка DepositNotFountException")
     @ExceptionHandler(DepositNotFountException.class)
     public ResponseEntity<ErrorResponseDTO> handleException(DepositNotFountException e) {
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
 
+    @Logging(value = "Ошибка UndefinedException")
     @ExceptionHandler(UndefinedException.class)
     public ResponseEntity<ErrorResponseDTO> handleException(UndefinedException e) {
-        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @Logging(value = "Ошибка ConstructorException")
     @ExceptionHandler(ConstructorException.class)
     public ResponseEntity<ErrorResponseDTO> handleException(ConstructorException e) {
-        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+    @Logging(value = "Ошибка ConstructorException")
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleException(InsufficientFundsException e) {
+        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @Logging(value = "Ошибка ConstructorException")
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<ErrorResponseDTO> handleException(HttpClientErrorException e) {
+        return new ResponseEntity<>(new ErrorResponseDTO("User account don't have enough money"), HttpStatus.BAD_REQUEST);
+    }
+
 
 }

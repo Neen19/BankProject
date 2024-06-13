@@ -1,5 +1,6 @@
 package ru.sarmosov.deposit.deposit.percent.monthly;
 
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.deposit.deposit.AbstractDeposit;
 import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
 import ru.sarmosov.deposit.util.NetworkUtils;
@@ -16,6 +17,7 @@ public abstract class AbstractMonthlyDeposit extends AbstractDeposit {
 
     protected final String token;
 
+    @Logging(value = "Выплата ежемесячных процентов по вкладу")
     @Override
     public BigDecimal payPercent() {
         LocalDate nowDate = LocalDate.now();

@@ -1,5 +1,6 @@
 package ru.sarmosov.deposit.deposit.capitalization;
 
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.deposit.deposit.AbstractDeposit;
 import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
 
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 
 abstract class AbstractCapitalizationDeposit extends AbstractDeposit {
 
+    @Logging(value = "Начисление процентов по капитализации")
     @Override
     public BigDecimal payPercent() {
         if (LocalDate.now().equals(percentPaymentDate)) {

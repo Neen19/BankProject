@@ -1,8 +1,12 @@
 package ru.sarmosov.customerservice.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.sarmosov.bankstarter.dto.AuthDTO;
+import ru.sarmosov.bankstarter.dto.ErrorResponseDTO;
 import ru.sarmosov.bankstarter.dto.TokenResponseDTO;
 import ru.sarmosov.customerservice.filter.JWTFilter;
 import ru.sarmosov.customerservice.service.JWTService;
@@ -27,39 +32,52 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class RestAuthControllerTest {
 
-
-    @MockBean
-    private JWTFilter jwtFilter;
-
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private JWTService jwtService;
 
+    @MockBean
+    private JWTFilter jwtFilter;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+
 
     @Test
     public void testLoginSuccess() throws Exception {
-        AuthDTO authDTO = new AuthDTO("user", "password");
-        TokenResponseDTO tokenResponseDTO = new TokenResponseDTO("token");
+        AuthDTO authDTO = new AuthDTO();
+        authDTO.setEmail("testuser@mail.ru");
+        authDTO.setPassword("password");
 
-        when(jwtService.getCustomerToken(any(AuthDTO.class))).thenReturn(tokenResponseDTO);
+        TokenResponseDTO tokenResponseDTO = new TokenResponseDTO();
+        tokenResponseDTO.setToken("test-token");
+
+        Mockito.when(jwtService.getCustomerToken(any(AuthDTO.class)))
+                .thenReturn(tokenResponseDTO);
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"user\", \"password\":\"password\"}"))
+                        .content(objectMapper.writeValueAsString(authDTO)))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"token\":\"token\"}"));
+                .andExpect(content().json(objectMapper.writeValueAsString(tokenResponseDTO)));
     }
 
     @Test
-    public void testLoginBadCredentials() throws Exception {
-        when(jwtService.getCustomerToken(any(AuthDTO.class))).thenThrow(new BadCredentialsException("User not found"));
+    public void testLoginFailure() throws Exception {
+        AuthDTO authDTO = new AuthDTO();
+        authDTO.setEmail("testuser@mail.ru");
+        authDTO.setPassword("password");
+
+        Mockito.when(jwtService.getCustomerToken(any(AuthDTO.class)))
+                .thenThrow(new BadCredentialsException("Bad credentials"));
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"user\", \"password\":\"wrongpassword\"}"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string("User not found"));
+                        .content(objectMapper.writeValueAsString(authDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(objectMapper.writeValueAsString(new ErrorResponseDTO("User not found"))));
     }
 }
+

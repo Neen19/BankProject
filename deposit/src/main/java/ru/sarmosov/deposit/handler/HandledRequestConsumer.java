@@ -4,6 +4,7 @@ package ru.sarmosov.deposit.handler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.bankstarter.enums.RequestStatus;
 import ru.sarmosov.bankstarter.exception.InsufficientFundsException;
 import ru.sarmosov.deposit.entity.DepositEntity;
@@ -36,6 +37,7 @@ public class HandledRequestConsumer {
     }
 
 
+//    @Logging(value = "Попытка получить из очереди обработанный запрос")
     @Scheduled(fixedDelay = 5000)
     public void consume() throws InterruptedException {
         if (!handledQueue.isEmpty()) {
@@ -45,6 +47,7 @@ public class HandledRequestConsumer {
                 throw new LittleDepositException("amount must be greater than 10000");
             }
             try {
+                System.out.println(entity.getToken());
                 NetworkUtils.decreaseBalance(entity.getToken(), entity.getAmount());
                 DepositEntity deposit = depositFactory.convertRequestEntityToDepositEntity(entity);
                 depositService.addDeposit(deposit);

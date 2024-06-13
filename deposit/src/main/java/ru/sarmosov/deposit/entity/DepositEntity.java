@@ -53,7 +53,7 @@ public class DepositEntity {
     private String token;
 
     @Column(name = "customerId")
-    private String customerId;
+    private Long customerId;
 
     public DepositEntity(
             DepositTypeEntity depositType,
@@ -75,7 +75,9 @@ public class DepositEntity {
         this.isCapitalization = isCapitalization;
         this.isMonthly = isMonthly;
         this.token = token;
-        this.percentPaymentDate = startDate.plusMonths(periodEntity.getPeriod().getValue());
-        this.customerId = customerId.toString();
+        if (isMonthly) {
+            this.percentPaymentDate = startDate.plusMonths(1);
+        } else this.percentPaymentDate = startDate.plusMonths(periodEntity.getPeriod().getValue());
+        this.customerId = customerId;
     }
 }

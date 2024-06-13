@@ -10,10 +10,8 @@ public class ReflectionUtil {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (isFieldNullable(field)) continue;
-            System.out.println(field.getName());
             field.setAccessible(true);
             try {
-                System.out.println(field.get(obj));
                 if (field.get(obj) == null) {
                     return false;
                 }

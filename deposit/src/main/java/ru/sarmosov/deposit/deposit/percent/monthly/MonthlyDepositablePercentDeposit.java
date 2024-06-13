@@ -1,5 +1,6 @@
 package ru.sarmosov.deposit.deposit.percent.monthly;
 
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.deposit.deposit.interfaces.Depositable;
 import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
 import ru.sarmosov.deposit.util.NetworkUtils;
@@ -13,6 +14,7 @@ public class MonthlyDepositablePercentDeposit extends AbstractMonthlyDeposit imp
         super(balance, percent, percentPaymentDate, period, startDate, endDate, token);
     }
 
+    @Logging(value = "Пополнение вклада")
     @Override
     public BigDecimal deposit(BigDecimal amount) {
         return NetworkUtils.increaseBalance(token, amount).getBalance();

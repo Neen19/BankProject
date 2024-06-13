@@ -2,6 +2,7 @@ package ru.sarmosov.deposit.factory;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.deposit.deposit.AbstractDeposit;
 import ru.sarmosov.deposit.deposit.capitalization.CapitalizationDeposit;
 import ru.sarmosov.deposit.deposit.capitalization.DepositableCapitalizationDeposit;
@@ -35,6 +36,7 @@ public class DepositFactoryImpl implements DepositFactory {
     private final PercentPaymentPeriodService periodService;
 
 
+    @Logging(value = "Конвертация запроса из бд во вклад из бд")
     @Override
     public DepositEntity convertRequestEntityToDepositEntity(RequestEntity request) throws ConstructorException {
         return new DepositEntity (
@@ -51,10 +53,12 @@ public class DepositFactoryImpl implements DepositFactory {
         );
     }
 
+    @Logging(value = "Вычисление даты окончания вклада")
     private LocalDate calculateEndDate(RequestEntity request) {
         return request.getRequestDate().plusMonths(request.getPeriod().getValue());
     }
 
+    @Logging(value = "Получение списка вкладов из итератора вкладов")
     @Override
     public List<AbstractDeposit> getDeposits(Iterable<DepositEntity> deposits) {
         List<AbstractDeposit> result = new ArrayList<>();
@@ -64,12 +68,13 @@ public class DepositFactoryImpl implements DepositFactory {
         return result;
     }
 
+    @Logging(value = "Конвертация типа оплаты процентов")
     private PercentPaymentType getPercentPaymentType(DepositEntity deposit) {
         if (deposit.isMonthly()) return PercentPaymentType.MONTHLY;
         return PercentPaymentType.AT_THE_END;
     }
 
-
+    @Logging(value = "Конвертация БД сущности вклада в бизнес сущность")
     @Override
     public AbstractDeposit convertDepositEntityToAbstractDeposit(DepositEntity depositEntity) {
         AbstractDeposit deposit;
@@ -177,6 +182,7 @@ public class DepositFactoryImpl implements DepositFactory {
                 }
             }
         }
+        System.out.println(deposit.getClass());
         return deposit;
 
     }

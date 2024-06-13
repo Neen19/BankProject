@@ -1,5 +1,6 @@
 package ru.sarmosov.deposit.deposit.percent.attheend;
 
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.deposit.deposit.interfaces.Depositable;
 import ru.sarmosov.deposit.deposit.interfaces.Withdrawable;
 import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
@@ -14,11 +15,13 @@ public class AtTheEndDepositableWithdrawablePercentDeposit extends AbstractAtThe
         super(balance, percent, percentPaymentDate, period, startDate, endDate, token);
     }
 
+    @Logging(value = "Пополнение вклада")
     @Override
     public BigDecimal deposit(BigDecimal amount) {
         return NetworkUtils.increaseBalance(token, amount).getBalance();
     }
 
+    @Logging(value = "Снятие денег со вклада")
     @Override
     public BigDecimal withdraw(BigDecimal amount) {
         return NetworkUtils.decreaseBalance(token, amount).getBalance();

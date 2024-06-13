@@ -1,5 +1,7 @@
 package ru.sarmosov.deposit.deposit.percent.attheend;
 
+import jakarta.validation.Valid;
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.deposit.deposit.AbstractDeposit;
 import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
 import ru.sarmosov.deposit.util.NetworkUtils;
@@ -16,6 +18,7 @@ public abstract class AbstractAtTheEndDeposit extends AbstractDeposit {
 
     protected final String token;
 
+    @Logging(value = "Начисление процентов по истечению вклада")
     @Override
     public BigDecimal payPercent() {
 

@@ -1,0 +1,48 @@
+spring:
+  task:
+    scheduling:
+      pool:
+        size: 10
+
+  application:
+    name: deposit
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    password: root
+    username: admin
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sarmosovnk@gmail.com
+    password: bclo zsih rufk wsst
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+jwt:
+  secret: secret-string
+  issuer: admin
+  customer-subject: customer
+  phone-number-claim: phone-number
+  id-claim: id
+  bank-account-id-claim: bank-id
+
+
+server:
+  port: 8082

@@ -1,0 +1,30 @@
+server:
+  port: 5252
+
+spring:
+  application:
+    name: account
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    password: root
+    username: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    user: admin
+    password: root
+    default-schema: public
+
+customer-service:
+  get-customer-url: http://localhost:8080/api/auth/customer
+
+jwt:
+  secret: secret-string
+  issuer: admin
+  customer-subject: customer
+  id-claim: id
+  bank-account-id-claim: bank-id
+  email-claim: email

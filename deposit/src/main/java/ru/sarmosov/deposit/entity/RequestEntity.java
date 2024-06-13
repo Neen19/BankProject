@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.util.Pair;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sarmosov.bankstarter.dto.CustomerDTO;
 import ru.sarmosov.bankstarter.dto.RequestDTO;
@@ -11,7 +12,7 @@ import ru.sarmosov.bankstarter.enums.DepositType;
 import ru.sarmosov.bankstarter.enums.PercentPaymentPeriod;
 import ru.sarmosov.bankstarter.enums.PercentPaymentType;
 import ru.sarmosov.bankstarter.enums.RequestStatus;
-import ru.sarmosov.deposit.converter.PercentPaymentPeriodConverter;
+
 
 
 import java.math.BigDecimal;
@@ -73,6 +74,8 @@ public class RequestEntity {
              BigDecimal percent,
              PercentPaymentPeriod period,
              Long customerId,
+             PercentPaymentType paymentType,
+             Boolean isCapitalization,
              String description) {
 
         this.requestDate = LocalDate.now();
@@ -84,6 +87,10 @@ public class RequestEntity {
         this.period = period;
         this.customerId = customerId;
         this.description = description;
+        if (paymentType.equals(PercentPaymentType.AT_THE_END))
+            this.isMonthly = false;
+        else isMonthly = true;
+        this.isCapitalization = isCapitalization;
     }
 
     @Override

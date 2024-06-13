@@ -17,7 +17,7 @@ public class EmailConfirmDTO {
     @Positive(message = "id must be positive")
     private Long requestId;
 
-    @NotBlank(message = "code can't be blank")
+    @NotNull(message = "code can't be blank")
     @Positive(message = "code must be positive")
     private int code;
 }

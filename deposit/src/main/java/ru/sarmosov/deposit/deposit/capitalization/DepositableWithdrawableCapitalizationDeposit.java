@@ -1,5 +1,6 @@
 package ru.sarmosov.deposit.deposit.capitalization;
 
+import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.bankstarter.exception.InsufficientFundsException;
 import ru.sarmosov.deposit.deposit.interfaces.Depositable;
 import ru.sarmosov.deposit.deposit.interfaces.Withdrawable;
@@ -11,12 +12,14 @@ import java.time.LocalDate;
 public class DepositableWithdrawableCapitalizationDeposit
         extends AbstractCapitalizationDeposit implements Depositable, Withdrawable {
 
+    @Logging(value = "Снятие денег со вклада")
     @Override
     public BigDecimal deposit(BigDecimal amount) {
         balance = balance.add(amount);
         return balance;
     }
 
+    @Logging(value = "Пополнение вклада")
     @Override
     public BigDecimal withdraw(BigDecimal amount) throws InsufficientFundsException {
         BigDecimal result = balance.subtract(amount);

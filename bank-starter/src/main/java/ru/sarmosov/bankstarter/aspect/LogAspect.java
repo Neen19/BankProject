@@ -35,7 +35,7 @@ public class LogAspect {
         Logger logger = LogManager.getLogger(fetchJoinPointObject(joinPoint));
 
 
-        if (logging.entering()) logger.log(level, ENTER, className + " " + methodName +": " + annotationValue);
+        if (logging.entering()) logger.log(level, ENTER, className + " " + methodName);
         logger.info("Метод {} получил аргументы: {}", methodName, methodArgs);
         Object result = joinPoint.proceed();
         if (logging.exiting()) logger.log(level, EXIT, annotationValue);

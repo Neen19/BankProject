@@ -36,12 +36,14 @@ public class ControllerServiceImpl implements ControllerService {
     private final DepositService depositService;
     private final ModelMapper modelMapper;
 
+    @Logging
     @Override
     public void emailConfirm(EmailConfirmDTO emailConfirmDTO) {
         emailCodeMap.put(emailConfirmDTO.getRequestId(), emailConfirmDTO.getCode());
         System.out.println("added with key" + emailConfirmDTO.getRequestId() + emailCodeMap.get(emailConfirmDTO.getRequestId()));
     }
 
+    @Logging
     @Override
     public void sendRequest(RequestDTO requestDTO, String token) {
         token = jwtUtil.trimToken(token);
@@ -50,29 +52,37 @@ public class ControllerServiceImpl implements ControllerService {
         handler.addRequest(entity);
     }
 
+    @Logging
     @Override
     public DepositEntity shutDownDeposit(IdDTO idDTO, String token) {
+        token = jwtUtil.trimToken(token);
         jwtUtil.verifyTokenAndRetrievePhoneNumber(token);
         return depositService.shutDownDeposit(idDTO.getId());
     }
 
+    @Logging
     @Override
     public DepositTotalDTO increaseDepositBalance(DepositTotalDTO depositTotalDTO, String token) throws DepositNotFountException {
         return depositService.increaseBalance(depositTotalDTO, token);
     }
 
+    @Logging
     @Override
     public DepositTotalDTO decreaseDepositBalance(DepositTotalDTO depositTotalDTO, String token) throws DepositNotFountException {
         return depositService.decreaseBalance(depositTotalDTO, token);
     }
 
+    @Logging
     @Override
     public List<DepositDTO> getDeposits(String token) {
-        return depositService.getCustomerDeposits(token).stream()
+        token = jwtUtil.trimToken(token);
+        Long customerId = jwtUtil.verifyTokenAndRetrievePhoneNumber(token).getId();
+        return depositService.getCustomerDeposits(customerId).stream()
                 .map(it->modelMapper.map(it, DepositDTO.class))
                 .collect(Collectors.toList());
     }
 
+    @Logging
     @Override
     public List<RequestResponseDTO> getRequests(String token) {
         token = jwtUtil.trimToken(token);
