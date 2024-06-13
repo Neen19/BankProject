@@ -23,7 +23,7 @@ abstract class AbstractCapitalizationDeposit extends AbstractDeposit {
         return balance;
     }
 
-    public AbstractCapitalizationDeposit(BigDecimal balance, BigDecimal percent, LocalDate percentPaymentDate, PercentPaymentPeriod period, LocalDate startDate, LocalDate endDate) {
-        super(balance, percent, percentPaymentDate, period, startDate, endDate);
+    public AbstractCapitalizationDeposit(BigDecimal balance, BigDecimal percent, LocalDate percentPaymentDate, PercentPaymentPeriod period, LocalDate startDate, LocalDate endDate, String token) {
+        super(balance, percent, percentPaymentDate, period, startDate, endDate, token);
     }
 }

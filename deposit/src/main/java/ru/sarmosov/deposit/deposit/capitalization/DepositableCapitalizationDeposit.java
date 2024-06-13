@@ -16,7 +16,7 @@ public class DepositableCapitalizationDeposit extends AbstractCapitalizationDepo
         return balance;
     }
 
-    public DepositableCapitalizationDeposit(BigDecimal balance, BigDecimal percent, LocalDate percentPaymentDate, PercentPaymentPeriod period, LocalDate startDate, LocalDate endDate) {
-        super(balance, percent, percentPaymentDate, period, startDate, endDate);
+    public DepositableCapitalizationDeposit(BigDecimal balance, BigDecimal percent, LocalDate percentPaymentDate, PercentPaymentPeriod period, LocalDate startDate, LocalDate endDate, String token) {
+        super(balance, percent, percentPaymentDate, period, startDate, endDate, token);
     }
 }

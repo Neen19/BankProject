@@ -14,6 +14,7 @@ import ru.sarmosov.deposit.dto.DepositDTO;
 import ru.sarmosov.deposit.dto.RequestResponseDTO;
 import ru.sarmosov.deposit.exception.ConstructorException;
 import ru.sarmosov.deposit.exception.DepositNotFountException;
+import ru.sarmosov.deposit.exception.EndedDepositException;
 import ru.sarmosov.deposit.exception.UndefinedException;
 import ru.sarmosov.deposit.service.controller.ControllerService;
 
@@ -115,6 +116,12 @@ public class RestDepositController {
     @ExceptionHandler(HttpClientErrorException.class)
     public ResponseEntity<ErrorResponseDTO> handleException(HttpClientErrorException e) {
         return new ResponseEntity<>(new ErrorResponseDTO("User account don't have enough money"), HttpStatus.BAD_REQUEST);
+    }
+
+    @Logging(value = "Ошибка ConstructorException")
+    @ExceptionHandler(EndedDepositException.class)
+    public ResponseEntity<ErrorResponseDTO> handleException(EndedDepositException e) {
+        return new ResponseEntity<>(new ErrorResponseDTO("Deposit already ended"), HttpStatus.BAD_REQUEST);
     }
 
 

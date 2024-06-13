@@ -90,7 +90,8 @@ public class DepositFactoryImpl implements DepositFactory {
                         depositEntity.getPercentPaymentDate(),
                         depositEntity.getPeriodEntity().getPeriod(),
                         depositEntity.getStartDate(),
-                        depositEntity.getEndDate()
+                        depositEntity.getEndDate(),
+                        depositEntity.getToken()
                 );
             } else if (depositType.equals(DepositType.WITH_DEPOSIT_NO_WITHDRAWAL)) {
                 deposit = new DepositableCapitalizationDeposit(
@@ -99,7 +100,8 @@ public class DepositFactoryImpl implements DepositFactory {
                         depositEntity.getPercentPaymentDate(),
                         depositEntity.getPeriodEntity().getPeriod(),
                         depositEntity.getStartDate(),
-                        depositEntity.getEndDate()
+                        depositEntity.getEndDate(),
+                        depositEntity.getToken()
                 );
             } else {
                 deposit = new CapitalizationDeposit(
@@ -108,7 +110,8 @@ public class DepositFactoryImpl implements DepositFactory {
                         depositEntity.getPercentPaymentDate(),
                         depositEntity.getPeriodEntity().getPeriod(),
                         depositEntity.getStartDate(),
-                        depositEntity.getEndDate()
+                        depositEntity.getEndDate(),
+                        depositEntity.getToken()
                 );
             }
 

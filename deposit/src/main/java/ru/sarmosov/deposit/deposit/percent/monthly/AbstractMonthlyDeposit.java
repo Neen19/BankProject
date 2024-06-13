@@ -11,11 +11,8 @@ import java.time.LocalDate;
 public abstract class AbstractMonthlyDeposit extends AbstractDeposit {
 
     public AbstractMonthlyDeposit(BigDecimal balance, BigDecimal percent, LocalDate percentPaymentDate, PercentPaymentPeriod period, LocalDate startDate, LocalDate endDate, String token) {
-        super(balance, percent, percentPaymentDate, period, startDate, endDate);
-        this.token = token;
+        super(balance, percent, percentPaymentDate, period, startDate, endDate, token);
     }
-
-    protected final String token;
 
     @Logging(value = "Выплата ежемесячных процентов по вкладу")
     @Override

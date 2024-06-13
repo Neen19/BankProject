@@ -7,8 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.sarmosov.bankstarter.annotation.Logging;
 import ru.sarmosov.bankstarter.dto.DepositTotalDTO;
 import ru.sarmosov.bankstarter.exception.InsufficientFundsException;
+import ru.sarmosov.deposit.deposit.AbstractDeposit;
 import ru.sarmosov.deposit.entity.DepositEntity;
 import ru.sarmosov.deposit.exception.DepositNotFountException;
+import ru.sarmosov.deposit.exception.EndedDepositException;
+import ru.sarmosov.deposit.factory.DepositFactory;
+import ru.sarmosov.deposit.factory.DepositFactoryImpl;
 import ru.sarmosov.deposit.repository.DepositRepository;
 import ru.sarmosov.deposit.util.NetworkUtils;
 
@@ -22,6 +26,7 @@ import java.util.Optional;
 public class DepositServiceImpl implements DepositService {
 
     private final DepositRepository depositRepository;
+    private final DepositFactory factory;
 
     @Logging
     @Override
@@ -43,6 +48,9 @@ public class DepositServiceImpl implements DepositService {
     @Transactional
     public DepositEntity shutDownDeposit(Long depositId) {
         DepositEntity deposit = depositRepository.findById(depositId).orElseThrow();
+        if (deposit.getEndDate().equals(LocalDate.now())) throw new EndedDepositException();
+        AbstractDeposit abstractDeposit = factory.convertDepositEntityToAbstractDeposit(deposit);
+        abstractDeposit.shutDown();
         deposit.setEndDate(LocalDate.now());
         return depositRepository.save(deposit);
     }

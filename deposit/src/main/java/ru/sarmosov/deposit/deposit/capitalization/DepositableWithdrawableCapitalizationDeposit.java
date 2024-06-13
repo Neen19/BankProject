@@ -29,8 +29,7 @@ public class DepositableWithdrawableCapitalizationDeposit
         return balance;
     }
 
-    public DepositableWithdrawableCapitalizationDeposit(BigDecimal balance, BigDecimal percent, LocalDate percentPaymentDate, PercentPaymentPeriod period, LocalDate startDate, LocalDate endDate) {
-        super(balance, percent, percentPaymentDate, period, startDate, endDate);
+    public DepositableWithdrawableCapitalizationDeposit(BigDecimal balance, BigDecimal percent, LocalDate percentPaymentDate, PercentPaymentPeriod period, LocalDate startDate, LocalDate endDate, String token) {
+        super(balance, percent, percentPaymentDate, period, startDate, endDate, token);
     }
-
 }
