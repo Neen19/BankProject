@@ -43,7 +43,7 @@ public class JWTUtilTest {
         when(bankStarterProperties.getISSUER()).thenReturn(issuer);
         when(bankStarterProperties.getID_CLAIM()).thenReturn(idClaim);
         when(bankStarterProperties.getBANK_ACCOUNT_ID_CLAIM()).thenReturn(bankAccountIdClaim);
-        when(bankStarterProperties.getPHONE_NUMBER_CLAIM()).thenReturn(phoneNumberClaim);
+        when(bankStarterProperties.getEMAIL_CLAIM()).thenReturn(phoneNumberClaim);
 
         Algorithm algorithm = Algorithm.HMAC256(secret);
         sampleToken = JWT.create()
@@ -61,6 +61,6 @@ public class JWTUtilTest {
 
         assertEquals(id, customerDTO.getId());
         assertEquals(bankAccountId, customerDTO.getBankAccountId());
-        assertEquals(phoneNumber, customerDTO.getPhoneNumber());
+        assertEquals(phoneNumber, customerDTO.getEmail());
     }
 }
