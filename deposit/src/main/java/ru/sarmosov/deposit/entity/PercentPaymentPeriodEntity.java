@@ -1,5 +1,6 @@
 package ru.sarmosov.deposit.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,12 +27,12 @@ public class PercentPaymentPeriodEntity {
     @Convert(converter = PercentPaymentPeriodConverter.class)
     private PercentPaymentPeriod period;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "id")
     private Set<DepositEntity> deposits;
 
     public PercentPaymentPeriodEntity(PercentPaymentPeriod period) {
         this.period = period;
     }
-
 
 }

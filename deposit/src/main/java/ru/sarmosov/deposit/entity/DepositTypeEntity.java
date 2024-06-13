@@ -1,5 +1,6 @@
 package ru.sarmosov.deposit.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,10 +28,13 @@ public class DepositTypeEntity {
     @Enumerated(EnumType.STRING)
     private DepositType typeName;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "id")
     private Set<DepositEntity> deposits;
 
     public DepositTypeEntity(DepositType typeName) {
         this.typeName = typeName;
     }
+
+
 }

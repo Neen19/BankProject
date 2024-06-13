@@ -55,10 +55,5 @@ public class RestBankAccountController {
         return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @Logging(value = "JWT токен не подошёл")
-    @ExceptionHandler(TokenVerificationException.class)
-    private ResponseEntity<ErrorResponseDTO> handleException(TokenVerificationException e) {
-        return new ResponseEntity<>(new ErrorResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
-    }
 
 }

@@ -77,4 +77,12 @@ public class DepositServiceImpl implements DepositService {
         } else throw new DepositNotFountException("deposit with id " + id + " not found");
         return deposit;
     }
+
+    @Override
+    public List<DepositEntity> getCustomerDeposits(String token) {
+        List<DepositEntity> list = depositRepository.findAllByToken(token);
+        System.out.println(list.size());
+        return list;
+    }
+
 }

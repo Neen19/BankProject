@@ -5,6 +5,7 @@ import ru.sarmosov.deposit.entity.DepositEntity;
 import ru.sarmosov.deposit.exception.DepositNotFountException;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface DepositService {
 
@@ -17,5 +18,8 @@ public interface DepositService {
     DepositTotalDTO increaseBalance(DepositTotalDTO depositTotalDTO, String token) throws DepositNotFountException;
 
     DepositTotalDTO decreaseBalance(DepositTotalDTO depositTotalDTO, String token) throws DepositNotFountException;
+
+    List<DepositEntity> getCustomerDeposits(String token);
+
 
 }

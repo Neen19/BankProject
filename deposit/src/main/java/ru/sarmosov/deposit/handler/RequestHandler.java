@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import ru.sarmosov.bankstarter.util.JWTUtil;
 import ru.sarmosov.deposit.entity.RequestEntity;
 import ru.sarmosov.bankstarter.enums.RequestStatus;
 import ru.sarmosov.deposit.exception.IllegalCodeException;
@@ -28,6 +29,7 @@ public class RequestHandler {
     private final BlockingQueue<Pair<RequestEntity, Future<RequestEntity>>> futureQueue;
     private final ConcurrentHashMap<Long, Integer> codeMap;
     private final MailService mailService;
+    private final JWTUtil jwtUtil;
 
 
     @Autowired
@@ -37,7 +39,8 @@ public class RequestHandler {
             @Qualifier("taskQueue") BlockingQueue<RequestEntity> taskQueue,
             @Qualifier("futureQueue") BlockingQueue<Pair<RequestEntity, Future<RequestEntity>>> futureQueue,
             ConcurrentHashMap<Long, Integer> codeMap,
-            MailService mailService) {
+            MailService mailService,
+            JWTUtil jwtUtil) {
 
         this.executorService = executorService;
         this.requestService = requestService;
@@ -45,6 +48,7 @@ public class RequestHandler {
         this.futureQueue = futureQueue;
         this.codeMap = codeMap;
         this.mailService = mailService;
+        this.jwtUtil = jwtUtil;
     }
 
 
@@ -58,7 +62,9 @@ public class RequestHandler {
         try {
             if (!taskQueue.isEmpty()) {
                 RequestEntity request = taskQueue.take();
-                Future<RequestEntity> future = executorService.submit(new RequestTask(request, request.getEmail()));
+                String email = jwtUtil.verifyTokenAndRetrievePhoneNumber(request.getToken()).getEmail();
+                requestService.updateRequestDescription(request.getId(), "Sending verification code on your email");
+                Future<RequestEntity> future = executorService.submit(new RequestTask(request, email));
                 futureQueue.add(Pair.of(request, future));
             }
         } catch (Throwable e) {
@@ -80,7 +86,6 @@ public class RequestHandler {
 
         @Override
         public RequestEntity call() throws IllegalCodeException, InterruptedException {
-            System.out.println("call from handler" + request.getEmail());
             int code = RandomUtil.getRandomCode();
             mailService.sendMail(
                     email,
@@ -88,7 +93,7 @@ public class RequestHandler {
                     "Your verification code is " + code +"\n" +
                             "Your request id is" + request.getId()
             );
-            System.out.println("send email");
+            requestService.updateRequestDescription(request.getId(), "Verification code send");
             while (!codeMap.containsKey(request.getId())) {
                 System.out.println("contains key" + request.getId() + codeMap.containsKey(request.getId()));
                 Thread.sleep(10000);

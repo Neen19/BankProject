@@ -7,7 +7,10 @@ import ru.sarmosov.bankstarter.enums.DepositType;
 import ru.sarmosov.bankstarter.enums.RequestStatus;
 import ru.sarmosov.bankstarter.util.JWTUtil;
 import ru.sarmosov.deposit.entity.RequestEntity;
+import ru.sarmosov.deposit.exception.ConstructorException;
 import ru.sarmosov.deposit.service.deposit.RequestStatusService;
+import ru.sarmosov.deposit.service.request.RequestService;
+import ru.sarmosov.deposit.util.ReflectionUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -15,20 +18,25 @@ public class RequestFactoryImpl implements RequestFactory {
 
     private final JWTUtil jwtUtil;
     private final RequestStatusService statusService;
+    private final RequestService requestService;
 
 
     @Override
-    public RequestEntity convertRequestDTOToEntity(RequestDTO dto, String token) {
-        String email = jwtUtil.verifyTokenAndRetrievePhoneNumber(token).getEmail();
-        return new RequestEntity(
+    public RequestEntity convertRequestDTOToEntity(RequestDTO dto, String token) throws ConstructorException {
+        Long customerId = jwtUtil.verifyTokenAndRetrievePhoneNumber(token).getId();
+        RequestEntity entity = new RequestEntity(
             dto.getAmount(),
                 statusService.getPersistenceEntity(RequestStatus.PENDING_CONFIRMATION),
                 token,
                 convertRequestDTOToDepositType(dto),
                 dto.getPercent(),
                 dto.getPaymentPeriod(),
-                email
+                customerId,
+                "request received"
         );
+        if (!ReflectionUtil.isFieldsNotNull(entity)) throw new ConstructorException("json mapping exception");
+        requestService.addRequest(entity);
+        return entity;
     }
 
     private DepositType convertRequestDTOToDepositType(RequestDTO dto) {

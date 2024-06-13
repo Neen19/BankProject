@@ -9,6 +9,8 @@ import ru.sarmosov.bankstarter.enums.RequestStatus;
 import ru.sarmosov.deposit.repository.RequestRepository;
 import ru.sarmosov.deposit.repository.RequestStatusRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
@@ -46,8 +48,21 @@ public class RequestServiceImpl implements RequestService {
         return requestRepository.save(requestEntity);
     }
 
+    @Override
+    @Transactional
+    public RequestEntity updateRequestDescription(Long requestId, String description) {
+        RequestEntity requestEntity = requestRepository.findById(requestId).orElseThrow();
+        requestEntity.setDescription(description);
+        return requestRepository.save(requestEntity);
+    }
+
     @Transactional
     public Iterable<RequestEntity> getRequests() {
         return requestRepository.findAll();
+    }
+
+    @Transactional
+    public List<RequestEntity> getCustomerRequests(Long customerId) {
+        return requestRepository.findAllByCustomerId(customerId);
     }
 }

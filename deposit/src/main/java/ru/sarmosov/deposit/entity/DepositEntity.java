@@ -52,6 +52,9 @@ public class DepositEntity {
     @Column(name = "customer_token")
     private String token;
 
+    @Column(name = "customerId")
+    private String customerId;
+
     public DepositEntity(
             DepositTypeEntity depositType,
             BigDecimal balance,
@@ -61,7 +64,8 @@ public class DepositEntity {
             PercentPaymentPeriodEntity periodEntity,
             boolean isCapitalization,
             boolean isMonthly,
-            String token) {
+            String token,
+            Long customerId) {
         this.depositType = depositType;
         this.balance = balance;
         this.startDate = startDate;
@@ -72,5 +76,6 @@ public class DepositEntity {
         this.isMonthly = isMonthly;
         this.token = token;
         this.percentPaymentDate = startDate.plusMonths(periodEntity.getPeriod().getValue());
+        this.customerId = customerId.toString();
     }
 }

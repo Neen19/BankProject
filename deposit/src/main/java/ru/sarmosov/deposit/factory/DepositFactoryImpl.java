@@ -16,10 +16,11 @@ import ru.sarmosov.deposit.entity.DepositEntity;
 import ru.sarmosov.deposit.entity.RequestEntity;
 import ru.sarmosov.bankstarter.enums.DepositType;
 import ru.sarmosov.bankstarter.enums.PercentPaymentType;
+import ru.sarmosov.deposit.exception.ConstructorException;
 import ru.sarmosov.deposit.service.deposit.DepositTypeService;
-import ru.sarmosov.deposit.service.deposit.DepositTypeServiceImpl;
 import ru.sarmosov.deposit.service.deposit.PercentPaymentPeriodService;
-import ru.sarmosov.deposit.service.deposit.PercentPaymentPeriodServiceImpl;
+import ru.sarmosov.deposit.util.ReflectionUtil;
+
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class DepositFactoryImpl implements DepositFactory {
 
 
     @Override
-    public DepositEntity convertRequestEntityToDepositEntity(RequestEntity request) {
+    public DepositEntity convertRequestEntityToDepositEntity(RequestEntity request) throws ConstructorException {
         return new DepositEntity (
                 typeService.getPersistenceEntity(request.getDepositType()),
                 request.getAmount(),
@@ -45,7 +46,8 @@ public class DepositFactoryImpl implements DepositFactory {
                 periodService.getPersistenceEntity(request.getPeriod()),
                 request.isCapitalization(),
                 request.isMonthly(),
-                request.getToken()
+                request.getToken(),
+                request.getCustomerId()
         );
     }
 

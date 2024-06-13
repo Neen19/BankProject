@@ -17,7 +17,9 @@ public enum PercentPaymentPeriod {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName();
+        return this.getClass().getSimpleName().toLowerCase();
     }
+
+
 
 }

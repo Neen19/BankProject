@@ -11,5 +11,5 @@ public @interface  Logging {
     String value() default "";
     boolean entering() default true;
     boolean exiting() default true;
-    String level() default "FATAL";
+    String level() default "INFO";
 }

@@ -21,23 +21,23 @@ import java.time.LocalDate;
 public class RequestDTO {
 
     @PositiveOrZero(message = "balance can't be negative")
-    @NotBlank(message = "balance can't be blank")
+    @NotNull(message = "balance can't be blank")
     private BigDecimal amount;
 
     @NotNull(message = "The field must not be null")
     private boolean isRefillable;
 
     @PositiveOrZero(message = "percent can't be negative")
-    @NotBlank(message = "percent can't be blank")
+    @NotNull(message = "percent can't be blank")
     private BigDecimal percent;
 
-    @NotBlank(message = "payment type can't be null")
+    @NotNull(message = "payment type can't be null")
     private PercentPaymentType paymentType;
 
     @NotNull(message = "The field must not be null")
     private boolean isWithdrawal;
 
-    @NotBlank(message = "payment period can't be blank")
+    @NotNull(message = "payment period can't be blank")
     private PercentPaymentPeriod paymentPeriod;
 
 

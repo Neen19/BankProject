@@ -25,7 +25,6 @@ import java.time.LocalDate;
 @Table(name = "requests")
 public class RequestEntity {
 
-
     @Id
     @Column(name = "id_request")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,8 +59,11 @@ public class RequestEntity {
     @Column(name = "is_monthly")
     private boolean isMonthly;
 
-    @Column(name = "customer_email")
-    private String email;
+    @Column(name = "customer_id")
+    private Long customerId;
+
+    @Column(name = "request_description")
+    private String description;
 
     public RequestEntity
             (BigDecimal amount,
@@ -70,7 +72,8 @@ public class RequestEntity {
              DepositType depositType,
              BigDecimal percent,
              PercentPaymentPeriod period,
-             String email) {
+             Long customerId,
+             String description) {
 
         this.requestDate = LocalDate.now();
         this.amount = amount;
@@ -79,7 +82,8 @@ public class RequestEntity {
         this.depositType = depositType;
         this.percent = percent;
         this.period = period;
-        this.email = email;
+        this.customerId = customerId;
+        this.description = description;
     }
 
     @Override
@@ -95,7 +99,6 @@ public class RequestEntity {
                 ", period=" + period +
                 ", isCapitalization=" + isCapitalization +
                 ", isMonthly=" + isMonthly +
-                ", email='" + email + '\'' +
                 '}';
     }
 }

@@ -1,5 +1,7 @@
 package ru.sarmosov.deposit.config;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.util.Pair;
@@ -23,6 +25,10 @@ import java.util.concurrent.*;
 @EnableTransactionManagement
 public class DepositConfiguration {
 
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
 
     @Bean
     public DateTimeFormatter dateTimeFormatter() {

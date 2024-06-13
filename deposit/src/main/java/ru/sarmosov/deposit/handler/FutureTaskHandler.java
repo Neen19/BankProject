@@ -22,18 +22,23 @@ public class FutureTaskHandler {
     private final ExecutorService executor;
     private final BlockingQueue<Pair<RequestEntity, Future<RequestEntity>>> futureQueue;
     private final BlockingQueue<RequestEntity> handledQueue;
+    private final RequestService requestService;
 
     public FutureTaskHandler(
             @Qualifier("futureService") ExecutorService executor,
             @Qualifier("handledQueue") BlockingQueue<RequestEntity> handledQueue,
-            @Qualifier("futureQueue") BlockingQueue<Pair<RequestEntity, Future<RequestEntity>>> futureQueue) {
+            @Qualifier("futureQueue") BlockingQueue<Pair<RequestEntity, Future<RequestEntity>>> futureQueue,
+            RequestService requestService) {
         this.executor = executor;
         this.futureQueue = futureQueue;
         this.handledQueue = handledQueue;
+        this.requestService = requestService;
     }
 
+//    @Logging(value = "Обработка ошибок")
     @Scheduled(fixedDelay = 4000)
-    public void handledRequest() throws Throwable{
+    public void handledRequest() throws Throwable {
+
         if (!futureQueue.isEmpty()) {
             var pair = futureQueue.take();
             RequestEntity request = pair.getFirst();
@@ -43,6 +48,7 @@ public class FutureTaskHandler {
                 Optional<RequestEntity> handled = futureReq.get(1, TimeUnit.MINUTES);
                 handled.ifPresent(handledQueue::add);
             } catch (Exception e) {
+                requestService.updateRequestDescription(request.getId(), "you haven't verified the code");
                 throw new TimeLimitException(request.getId().toString());
             }
         }

@@ -25,35 +25,35 @@ public class HandledRequestConsumer {
     private final DepositService depositService;
     private final DepositFactory depositFactory;
 
-    public HandledRequestConsumer(@Qualifier("handledQueue") BlockingQueue<RequestEntity> handledQueue, RequestService requestService, DepositService depositService, DepositFactory depositFactory) {
+    public HandledRequestConsumer(
+            @Qualifier("handledQueue") BlockingQueue<RequestEntity> handledQueue,
+            RequestService requestService, DepositService depositService,
+            DepositFactory depositFactory) {
         this.handledQueue = handledQueue;
         this.requestService = requestService;
         this.depositService = depositService;
         this.depositFactory = depositFactory;
     }
 
-    private Iterable<RequestEntity> iter;
 
     @Scheduled(fixedDelay = 5000)
     public void consume() throws InterruptedException {
         if (!handledQueue.isEmpty()) {
             RequestEntity entity = handledQueue.take();
             if (entity.getAmount().compareTo(new BigDecimal("10000")) < 0) {
+                requestService.updateRequestDescription(entity.getId(), "The deposit amount is too small");
                 throw new LittleDepositException("amount must be greater than 10000");
             }
             try {
-                System.out.println(entity.getToken());
                 NetworkUtils.decreaseBalance(entity.getToken(), entity.getAmount());
-                System.out.println(entity);
                 DepositEntity deposit = depositFactory.convertRequestEntityToDepositEntity(entity);
-                System.out.println(deposit);
                 depositService.addDeposit(deposit);
             } catch (InsufficientFundsException e) {
+                requestService.updateRequestDescription(entity.getId(), "There are insufficient funds in the account");
                 requestService.updateRequestStatus(entity.getId(), RequestStatus.REJECTED);
             }
         }
     }
-
 
 
 }

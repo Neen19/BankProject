@@ -4,8 +4,12 @@ import ru.sarmosov.bankstarter.dto.DepositTotalDTO;
 import ru.sarmosov.bankstarter.dto.EmailConfirmDTO;
 import ru.sarmosov.bankstarter.dto.IdDTO;
 import ru.sarmosov.bankstarter.dto.RequestDTO;
+import ru.sarmosov.deposit.dto.DepositDTO;
+import ru.sarmosov.deposit.dto.RequestResponseDTO;
 import ru.sarmosov.deposit.entity.DepositEntity;
 import ru.sarmosov.deposit.exception.DepositNotFountException;
+
+import java.util.List;
 
 public interface ControllerService {
 
@@ -13,10 +17,13 @@ public interface ControllerService {
 
     void emailConfirm(EmailConfirmDTO emailConfirmDTO);
 
-    DepositEntity shutDownDeposit(IdDTO idDTO);
+    DepositEntity shutDownDeposit(IdDTO idDTO, String token);
 
     DepositTotalDTO increaseDepositBalance(DepositTotalDTO depositTotalDTO, String token) throws DepositNotFountException;
 
     DepositTotalDTO decreaseDepositBalance(DepositTotalDTO depositTotalDTO, String token) throws DepositNotFountException;
 
+    List<DepositDTO> getDeposits(String toke);
+
+    List<RequestResponseDTO> getRequests(String token);
 }

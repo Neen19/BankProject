@@ -1,5 +1,6 @@
 package ru.sarmosov.deposit.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class RequestStatusEntity {
     @Column(name = "request_status_name")
     private RequestStatus status;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "id")
     private Set<RequestEntity> requestEntitySet;
 

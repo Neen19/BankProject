@@ -23,4 +23,6 @@ public interface DepositRepository extends CrudRepository<DepositEntity, Long> {
     @Query("SELECT d FROM DepositEntity d WHERE d.depositType = (SELECT t FROM DepositTypeEntity t WHERE t.id = 1 )")
     List<DepositEntity> findWithdrawal();
 
+    List<DepositEntity> findAllByToken(String token);
+
 }
